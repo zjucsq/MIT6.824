@@ -53,6 +53,11 @@ func (c *Coordinator) Done() bool {
 	ret := false
 
 	// Your code here.
+	c.Mu.Lock()
+	defer c.Mu.Unlock()
+	if len(c.MapTodo) == 0 && len(c.MapRunning) == 0 && len(c.ReduceTodo) == 0 && len(c.ReduceRunning) == 0 {
+		ret = true
+	}
 
 	return ret
 }
@@ -66,7 +71,11 @@ func MakeCoordinator(files []string, nReduce int) *Coordinator {
 	// Your code here.
 	c.MapNum = len(files)
 	c.ReduceNum = nReduce
-	c.MapNum
+	c.MapTodo = make(map[int]bool)
+	c.MapRunning = make(map[int]bool)
+	c.ReduceTodo = make(map[int]bool)
+	c.ReduceRunning = make(map[int]bool)
+
 	for i := 0; i < c.MapNum; i++ {
 		c.MapTodo[i] = true
 	}
@@ -138,4 +147,30 @@ func (c *Coordinator) AcquireJob(args *AcJobArgs, reply *AcJobReply) error {
 		log.Println("job is all done!")
 		return nil
 	}
+	return nil
+}
+
+func (c *Coordinator) JobFinish(args *JobFinishArgs, reply *JobFinishReply) error {
+	c.Mu.Lock()
+	defer c.Mu.Unlock()
+
+	job := args.AcJob
+	if job.JobType == MapJob {
+		_, ok := c.MapRunning[job.JobId]
+		if ok {
+			delete(c.MapRunning, job.JobId)
+		} else {
+			return nil
+		}
+	} else if job.JobType == ReduceJob {
+		_, ok := c.ReduceRunning[job.JobId]
+		if ok {
+			delete(c.ReduceRunning, job.JobId)
+		} else {
+			return nil
+		}
+	} else {
+		log.Fatalln("Unknown finish job type.")
+	}
+	return nil
 }

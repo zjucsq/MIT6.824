@@ -47,17 +47,15 @@ type AcJobReply struct {
 	ReduceNum int
 }
 
-type DoneJobArgs struct {
+type JobFinishArgs struct {
+	AcJob Job
 }
 
-type DoneJobReply struct {
-	AcJob     Job
-	MapNum    int
-	ReduceNum int
+type JobFinishReply struct {
 }
 
 // Cook up a unique-ish UNIX-domain socket name
-// in /var/tmp, for the coordinator.
+// in /var/temp, for the coordinator.
 // Can't use the current directory since
 // Athena AFS doesn't support UNIX-domain sockets.
 func coordinatorSock() string {

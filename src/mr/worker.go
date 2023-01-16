@@ -53,14 +53,16 @@ func Worker(mapf func(string, string) []KeyValue,
 			time.Sleep(1 * time.Second)
 		} else if job.JobType == MapJob {
 			filename := job.File
-			log.Println("Get map job, filename = ", filename)
+			log.Println("Get map job, filename =", filename)
 			file, err := os.Open(filename)
-			// fmt.Println("Load file", filename)
+
 			if err != nil {
+				log.Println("1")
 				log.Fatalf("cannot open %v", filename)
 			}
 			content, err := ioutil.ReadAll(file)
 			if err != nil {
+				log.Println("2")
 				log.Fatalf("cannot read %v", filename)
 			}
 			file.Close()
@@ -75,8 +77,9 @@ func Worker(mapf func(string, string) []KeyValue,
 			}
 			for i := 0; i < reply.ReduceNum; i++ {
 				outFileName := fmt.Sprintf("mr-%d-%d", job.JobId, i)
-				outFile, err := os.CreateTemp("", outFileName)
+				outFile, err := os.CreateTemp("./", outFileName)
 				if err != nil {
+					// log.Println("open tempfile", outFile.Name())
 					log.Fatal(err)
 				}
 
@@ -89,9 +92,20 @@ func Worker(mapf func(string, string) []KeyValue,
 				}
 				outFile.Close()
 				os.Rename(outFile.Name(), outFileName)
+				// log.Println("Rename", outFile.Name(), "to", outFileName)
 			}
+
+			go func(job Job) {
+				args := JobFinishArgs{job}
+				reply := JobFinishReply{}
+				ok := call("Coordinator.JobFinish", &args, &reply)
+				if !ok {
+					log.Fatal("map call taskdone error!")
+				}
+			}(job)
+
 		} else if job.JobType == ReduceJob {
-			log.Println("Get map job, job id = ", job.JobId)
+			log.Println("Get reduce job, job id = ", job.JobId)
 			allReduceFile := make([]string, reply.MapNum)
 			for i := 0; i < reply.MapNum; i++ {
 				allReduceFile[i] = fmt.Sprintf("mr-%d-%d", i, job.JobId)
@@ -117,7 +131,7 @@ func Worker(mapf func(string, string) []KeyValue,
 			sort.Sort(ByKey(kva))
 
 			oname := fmt.Sprintf("mr-out-%d", job.JobId)
-			ofile, _ := os.CreateTemp("", oname)
+			ofile, _ := os.CreateTemp("./", oname)
 
 			i := 0
 			for i < len(kva) {
@@ -139,6 +153,15 @@ func Worker(mapf func(string, string) []KeyValue,
 
 			ofile.Close()
 			os.Rename(ofile.Name(), oname)
+
+			go func(job Job) {
+				args := JobFinishArgs{job}
+				reply := JobFinishReply{}
+				ok := call("Coordinator.JobFinish", &args, &reply)
+				if !ok {
+					log.Fatal("reduce call taskdone error!")
+				}
+			}(job)
 
 		} else {
 			log.Fatalln("Unknown job type.")

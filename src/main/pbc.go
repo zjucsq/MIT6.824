@@ -7,11 +7,11 @@ package main
 // go build viewd.go
 // go build pbd.go
 // go build pbc.go
-// ./viewd /tmp/rtm-v &
-// ./pbd /tmp/rtm-v /tmp/rtm-1 &
-// ./pbd /tmp/rtm-v /tmp/rtm-2 &
-// ./pbc /tmp/rtm-v key1 value1
-// ./pbc /tmp/rtm-v key1
+// ./viewd /temp/rtm-v &
+// ./pbd /temp/rtm-v /temp/rtm-1 &
+// ./pbd /temp/rtm-v /temp/rtm-2 &
+// ./pbc /temp/rtm-v key1 value1
+// ./pbc /temp/rtm-v key1
 //
 // change "rtm" to your user name.
 // start the pbd programs in separate windows and kill
