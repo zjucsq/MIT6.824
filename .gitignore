@@ -5,3 +5,5 @@ api.key
 *mr-out-*
 .idea/
 .vscode/
+src/raft/2023*/
+src/debug/output.log

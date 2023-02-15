@@ -75,13 +75,36 @@ type Raft struct {
 	matchIndex []int
 }
 
-// Remeber to acquire lock outside these functions
+// get the first dummy log index
+func (rf *Raft) GetFirstIndex() int {
+	return rf.log[0].Index
+}
+
+// get the first dummy log term
+func (rf *Raft) GetFirstTerm() int {
+	return rf.log[0].Term
+}
+
+// get the last log term
+func (rf *Raft) GetLastTerm() int {
+	return rf.log[len(rf.log)-1].Term
+}
+
+// get the last log index
 func (rf *Raft) GetLastIndex() int {
 	return rf.log[len(rf.log)-1].Index
 }
 
-func (rf *Raft) GetLastTerm() int {
-	return rf.log[len(rf.log)-1].Term
+// get the Term of index
+// compute the location in log and return the result
+func (rf *Raft) GetTermForIndex(index int) int {
+	return rf.log[index-rf.GetFirstIndex()].Term
+}
+
+// get the command of index
+// compute the location in log and return the result
+func (rf *Raft) GetCommand(index int) interface{} {
+	return rf.log[index-rf.GetFirstIndex()].Command
 }
 
 // return currentTerm and whether this server

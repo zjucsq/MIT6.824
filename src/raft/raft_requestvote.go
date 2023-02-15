@@ -142,8 +142,6 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 		// rf.SetHeartBeatExpireTime()
 		rf.SetRandomExpireTime()
 	}
-	if reply.VoteGranted {
-		// DebugGrantVote(rf.me, rf.votedFor, args.Term)
-	}
+
 	return
 }

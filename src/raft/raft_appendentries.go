@@ -37,12 +37,14 @@ func (rf *Raft) appendTicker() {
 							rf.me, i, rf.nextIndex[i], rf.log[rf.nextIndex[i]].Term, len(rf.log)-1, rf.log[len(rf.log)-1].Term, rf.nextIndex[i]-1,
 							rf.log[rf.nextIndex[i]-1].Term, rf.commitIndex)
 					} else {
-						Debug(dLog, "S%d -> S%d: T%d send empty log %s, prevLogIndex=%d, prevLogTerm=%d, leaderCommit=%d",
-							rf.me, i, rf.currentTerm, rf.log[rf.nextIndex[i]:], rf.nextIndex[i]-1,
-							rf.log[rf.nextIndex[i]-1].Term, rf.commitIndex)
+						//Debug(dLog, "S%d -> S%d: T%d send empty log %s, prevLogIndex=%d, prevLogTerm=%d, leaderCommit=%d",
+						//	rf.me, i, rf.currentTerm, rf.log[rf.nextIndex[i]:], rf.nextIndex[i]-1,
+						//	rf.log[rf.nextIndex[i]-1].Term, rf.commitIndex)
 					}
+					logs := make([]LogEntry, rf.GetLastIndex()-rf.nextIndex[i]+1)
+					copy(logs, rf.log[rf.nextIndex[i]-rf.GetFirstIndex():])
 					go rf.CallAppendEntries(i, rf.currentTerm, rf.me, rf.nextIndex[i]-1,
-						rf.log[rf.nextIndex[i]-1].Term, rf.commitIndex, rf.log[rf.nextIndex[i]:])
+						rf.log[rf.nextIndex[i]-1].Term, rf.commitIndex, logs)
 				}
 			}
 		}
@@ -89,23 +91,27 @@ func (rf *Raft) CallAppendEntries(idx, term, leader, prevLogIndex, prevLogTerm, 
 		} else {
 			// append successfully
 			// update nextIndex
-			rf.nextIndex[idx] = rf.nextIndex[idx] + len(logs)
-			rf.matchIndex[idx] = rf.nextIndex[idx] - 1
-			// update commitIdx
-			// leader can only commit log in its currentTerm
-			if rf.log[rf.matchIndex[idx]].Term == rf.currentTerm {
-				newCommitIndex := rf.matchIndex[idx]
-				if newCommitIndex > rf.commitIndex {
-					cnt := 0
-					for _, v := range rf.nextIndex {
-						if v > newCommitIndex {
-							cnt += 1
+			// For duplicated rpc call, we should check rf.nextIndex[idx] == prevLogIndex + 1, if not, the response is out-of-date, throw it.
+			if rf.nextIndex[idx] == prevLogIndex+1 {
+				rf.nextIndex[idx] = rf.nextIndex[idx] + len(logs)
+				// Debug(dLog, "S%d revieve from S%d, new nextIndex[idx]=%d", rf.me, idx, rf.nextIndex[idx])
+				rf.matchIndex[idx] = rf.nextIndex[idx] - 1
+				// update commitIdx
+				// leader can only commit log in its currentTerm
+				if rf.log[rf.matchIndex[idx]].Term == rf.currentTerm {
+					newCommitIndex := rf.matchIndex[idx]
+					if newCommitIndex > rf.commitIndex {
+						cnt := 0
+						for _, v := range rf.nextIndex {
+							if v > newCommitIndex {
+								cnt += 1
+							}
 						}
-					}
-					if cnt > len(rf.peers)/2 {
-						Debug(dCommit, "%d follow recieved, update leader S%d commitIndex I%d -> I%d", cnt, rf.me, rf.commitIndex, newCommitIndex)
-						rf.commitIndex = newCommitIndex
-						rf.cv.Signal()
+						if cnt > len(rf.peers)/2 {
+							Debug(dCommit, "%d follow recieved, update leader S%d commitIndex I%d -> I%d", cnt, rf.me, rf.commitIndex, newCommitIndex)
+							rf.commitIndex = newCommitIndex
+							rf.cv.Signal()
+						}
 					}
 				}
 			}
@@ -124,7 +130,7 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 	rf.mu.Lock()
 	defer rf.mu.Unlock()
 
-	Debug(dInfo, "S%d receive append entries log = %s commitid = %d", rf.me, args.Entries, args.LeaderCommit)
+	// Debug(dInfo, "S%d receive append entries log = %s commitid = %d", rf.me, args.Entries, args.LeaderCommit)
 	reply.Term = rf.currentTerm
 	reply.Success = false
 	// Situation1: The leader's term is smaller
@@ -164,10 +170,11 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 
 	// Situation4: append success
 	reply.Success = true
-	//Debug(dLog, "S%d, append true", rf.me)
+	//Debug(dLog, "args.PrevLogIndex=%d rf.GetLastIndex()=%d rf.log[args.PrevLogIndex].Term=%d args.PrevTermIndex=%d", args.PrevLogIndex, rf.GetLastIndex(), rf.log[args.PrevLogIndex].Term, args.PrevTermIndex)
+	//Debug(dLog, "S%d, append true, len(log) = %d", rf.me, len(args.Entries))
 
 	if len(args.Entries) > 0 {
-		Debug(dClient, "S%d T%d Roler: %s will append logs, before append Log:%v, append:%v", rf.me, rf.currentTerm, rf.state, rf.log, args.Entries)
+		// Debug(dClient, "S%d T%d Roler: %s will append logs, before append Log:%v, append:%v", rf.me, rf.currentTerm, rf.state, rf.log, args.Entries)
 		// If args.PrevLogIndex < rf.GetLastIndex(), we just overwrite directly.
 		// two situations: 1) duplicated rpc call; 2) TestFailNoAgree2B: too many followers disconnect, remain alive servers will have unwanted uncommitted logs.
 		// Note here rf.log[args.PrevLogIndex].Term == args.PrevTermIndex must be satisfied.

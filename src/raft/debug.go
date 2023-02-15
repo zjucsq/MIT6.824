@@ -99,7 +99,7 @@ func DebugELT(s, term int, t time.Time) {
 //}
 
 func DebugNewCommand(rf *Raft) {
-	Debug(dLeader, "S%d T%d Roler: %s Receive New Command, Now Leader Log:%v", rf.me, rf.currentTerm, rf.state, rf.log)
+	Debug(dLeader, "S%d T%d Roler: %s Receive New Command, Now Leader Log len:%d", rf.me, rf.currentTerm, rf.state, len(rf.log))
 }
 
 //
