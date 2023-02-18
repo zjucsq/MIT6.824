@@ -1,12 +1,16 @@
 package raft
 
 import (
+	"log"
 	"math/rand"
 	"time"
 )
 
 // For state change
-func (rf *Raft) ToFollower(term int) {
+func (rf *Raft) ToFollower(term int, reason StateChangeReason) {
+	if reason != CandidateDiscoverHigherTerm && reason != LeaderDiscoverHigherTerm {
+		log.Fatalln("ToFollower wrong")
+	}
 	DebugToFollower(rf, term)
 	rf.state = Follower
 	rf.currentTerm = term
@@ -15,7 +19,10 @@ func (rf *Raft) ToFollower(term int) {
 	rf.persist()
 }
 
-func (rf *Raft) ToCandidate() {
+func (rf *Raft) ToCandidate(reason StateChangeReason) {
+	if reason != FollowTimeout && reason != CandidateTimeout {
+		log.Fatalln("ToCandidate wrong")
+	}
 	DebugToCandidate(rf)
 	rf.state = Candidate
 	rf.receiveVoteNum = 1
@@ -23,7 +30,10 @@ func (rf *Raft) ToCandidate() {
 	rf.persist()
 }
 
-func (rf *Raft) ToLeader(term int) {
+func (rf *Raft) ToLeader(term int, reason StateChangeReason) {
+	if reason != CandidateReceiveMajor {
+		log.Fatalln("ToLeader wrong")
+	}
 	DebugToLeader(rf.me, term, rf.receiveVoteNum)
 	rf.state = Leader
 	rf.currentTerm = term

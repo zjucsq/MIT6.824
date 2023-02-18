@@ -71,7 +71,7 @@ func (rf *Raft) CallAppendEntries(idx, term, leader, prevLogIndex, prevLogTerm, 
 			// Debug(dLog, "S%d, reply.Term%d, currentTerm%d", rf.me, reply.Term, rf.currentTerm)
 			if reply.Term > rf.currentTerm {
 				// Find other server has a bigger term
-				rf.ToFollower(reply.Term)
+				rf.ToFollower(reply.Term, LeaderDiscoverHigherTerm)
 			} else {
 				// In theory, the heartbeat packet(len(logs) == 0) will not go into this branch
 				// log mismatch
@@ -133,7 +133,7 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 	// Debug(dInfo, "S%d receive append entries log = %s commitid = %d", rf.me, args.Entries, args.LeaderCommit)
 	reply.Term = rf.currentTerm
 	reply.Success = false
-	// Situation1: The leader's term is smaller
+	// The leader's term is smaller, return directly.
 	if args.Term < rf.currentTerm {
 		//Debug(dLog, "S%d, append fail", rf.me)
 		return
@@ -142,14 +142,19 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 	// update the server's term
 	if args.Term > rf.currentTerm {
 		reply.Term = args.Term
-		rf.ToFollower(args.Term)
+		rf.currentTerm = args.Term
+		// rf.ToFollower(args.Term)
 	}
+
+	// Leader is right, so we reset expire time.
 	// rf.SetHeartBeatExpireTime()
 	rf.SetRandomExpireTime()
 
-	// Situation2: prevlog mismatch (in book is <, but i think here is !=)
+	// Check if the logs is match?
 	// Note: For heartbeat packet, we still need to check if it is matched.
-	// Why < rather than !=? rf.GetLastIndex() is not committed, so if args.PrevLogIndex < rf.GetLastIndex(), we just overwrite directly.
+	// If args.PrevLogIndex > rf.GetLastIndex(), there must be a vacancy in the log.
+	// If rf.log[args.PrevLogIndex].Term != args.PrevTermIndex, the leader think its log must be right, so rf.log[args.PrevLogIndex] in the follower must be wrong, the follow need more logs.
+	// If args.PrevLogIndex < rf.GetLastIndex() and rf.log[args.PrevLogIndex].Term == args.PrevTermIndex, we can overwrite directly. (This maybe duplicate rpc call)
 	if args.PrevLogIndex > rf.GetLastIndex() || rf.log[args.PrevLogIndex].Term != args.PrevTermIndex {
 		Debug(dLog, "S%d get last log: [I%d, T%d], expected last log: [I%d, T%d]",
 			rf.me, args.PrevLogIndex, args.PrevTermIndex, rf.GetLastIndex(), rf.GetLastTerm())
@@ -168,16 +173,16 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 		return
 	}
 
-	// Situation4: append success
+	// Append success
 	reply.Success = true
 	//Debug(dLog, "args.PrevLogIndex=%d rf.GetLastIndex()=%d rf.log[args.PrevLogIndex].Term=%d args.PrevTermIndex=%d", args.PrevLogIndex, rf.GetLastIndex(), rf.log[args.PrevLogIndex].Term, args.PrevTermIndex)
 	//Debug(dLog, "S%d, append true, len(log) = %d", rf.me, len(args.Entries))
 
+	// If args.PrevLogIndex < rf.GetLastIndex() and rf.log[args.PrevLogIndex].Term == args.PrevTermIndex, we just overwrite directly.
+	// two situations: 1) duplicated rpc call; 2) TestFailNoAgree2B: too many followers disconnect, remain alive servers will have unwanted uncommitted logs.
+	// Note here rf.log[args.PrevLogIndex].Term == args.PrevTermIndex must be satisfied.
 	if len(args.Entries) > 0 {
 		// Debug(dClient, "S%d T%d Roler: %s will append logs, before append Log:%v, append:%v", rf.me, rf.currentTerm, rf.state, rf.log, args.Entries)
-		// If args.PrevLogIndex < rf.GetLastIndex(), we just overwrite directly.
-		// two situations: 1) duplicated rpc call; 2) TestFailNoAgree2B: too many followers disconnect, remain alive servers will have unwanted uncommitted logs.
-		// Note here rf.log[args.PrevLogIndex].Term == args.PrevTermIndex must be satisfied.
 		index := args.PrevLogIndex
 		for i, entry := range args.Entries {
 			index++

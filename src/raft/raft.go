@@ -35,6 +35,16 @@ const (
 	Leader    RaftState = "Leader"
 )
 
+type StateChangeReason string
+
+const (
+	FollowTimeout               StateChangeReason = "FollowTimeout"
+	CandidateTimeout            StateChangeReason = "CandidateTimeout"
+	CandidateReceiveMajor       StateChangeReason = "CandidateReceiveMajor"
+	CandidateDiscoverHigherTerm StateChangeReason = "CandidateDiscoverHigherTerm"
+	LeaderDiscoverHigherTerm    StateChangeReason = "LeaderDiscoverHigherTerm"
+)
+
 const (
 	ELECTION_TIMER_RESOLUTION = 5 // check whether timer expire every 5 millisecond.
 	ELECTION_EXPIRE_LEFT      = 180

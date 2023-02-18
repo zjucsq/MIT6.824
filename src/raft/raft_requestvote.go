@@ -46,7 +46,11 @@ func (rf *Raft) voteTicker() {
 func (rf *Raft) startVote() {
 	rf.SetRandomExpireTime()
 	DebugELT(rf.me, rf.currentTerm+1, rf.eleExpireTime)
-	rf.ToCandidate()
+	if rf.state == Follower {
+		rf.ToCandidate(FollowTimeout)
+	} else if rf.state == Candidate {
+		rf.ToCandidate(CandidateTimeout)
+	}
 	for i := range rf.peers {
 		if i != rf.me {
 			go rf.CallForVote(i, rf.currentTerm+1, rf.me, rf.GetLastIndex(), rf.GetLastTerm())
@@ -71,10 +75,10 @@ func (rf *Raft) CallForVote(idx, term, candidate, lastIndex, lastTerm int) {
 			DebugGetVote(rf.me, idx, term)
 			rf.receiveVoteNum++
 			if rf.receiveVoteNum > len(rf.peers)/2 {
-				rf.ToLeader(term)
+				rf.ToLeader(term, CandidateReceiveMajor)
 			}
 		} else if reply.Term > rf.currentTerm {
-			rf.ToFollower(reply.Term)
+			rf.ToFollower(reply.Term, CandidateDiscoverHigherTerm)
 		}
 	} else {
 		// DebugRpcFail(dVote, "RequestVote")
@@ -127,7 +131,7 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 	}
 
 	if args.Term > rf.currentTerm {
-		rf.ToFollower(args.Term)
+		rf.ToFollower(args.Term, CandidateDiscoverHigherTerm)
 	}
 
 	if rf.votedFor == -1 || rf.votedFor == args.CandidateId {
