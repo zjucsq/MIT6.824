@@ -1,5 +1,18 @@
 package raft
 
+type InstallSnapshotArgs struct {
+	Term              int
+	LeaderId          int
+	LastIncludedIndex int
+	LastIncludeTerm   int
+	Data              []byte
+	// For simplicity, we do not have offest and done arguments because we can send entire the snapshot at one time.
+}
+
+type InstallSnapshotReply struct {
+	Term int
+}
+
 // A service wants to switch to snapshot.  Only do so if Raft hasn't
 // have more recent info since it communicate the snapshot on applyCh.
 func (rf *Raft) CondInstallSnapshot(lastIncludedTerm int, lastIncludedIndex int, snapshot []byte) bool {

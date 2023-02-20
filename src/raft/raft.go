@@ -38,11 +38,13 @@ const (
 type StateChangeReason string
 
 const (
+	Timeout                     StateChangeReason = "Timeout"
 	FollowTimeout               StateChangeReason = "FollowTimeout"
 	CandidateTimeout            StateChangeReason = "CandidateTimeout"
 	CandidateReceiveMajor       StateChangeReason = "CandidateReceiveMajor"
 	CandidateDiscoverHigherTerm StateChangeReason = "CandidateDiscoverHigherTerm"
 	LeaderDiscoverHigherTerm    StateChangeReason = "LeaderDiscoverHigherTerm"
+	DiscoverHigherTerm          StateChangeReason = "DiscoverHigherTerm"
 )
 
 const (
@@ -72,7 +74,10 @@ type Raft struct {
 	state             RaftState
 	heartBeatSendTime time.Time // Next times to send heartbeat
 	eleExpireTime     time.Time
+	receiveVote       []int
 	receiveVoteNum    int
+	appendId          int
+	receiveAppendId   []int
 	// Persistent state on all servers
 	currentTerm int
 	votedFor    int
@@ -169,6 +174,7 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 	rf.persist()
 	DebugNewCommand(rf)
 	rf.nextIndex[rf.me] = index + 1
+	rf.SetHeartBeatSendTime(true)
 	//log.Print(index, term, isLeader)
 	return index, term, isLeader
 }
@@ -218,6 +224,9 @@ func Make(peers []*labrpc.ClientEnd, me int,
 		lastApplied:       0,
 		nextIndex:         make([]int, numServers),
 		matchIndex:        make([]int, numServers),
+		receiveVote:       make([]int, numServers),
+		receiveVoteNum:    0,
+		receiveAppendId:   make([]int, numServers),
 		log:               make([]LogEntry, 0),
 		state:             Follower,
 		heartBeatSendTime: expireTime,

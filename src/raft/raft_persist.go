@@ -25,8 +25,8 @@ func (rf *Raft) persist() {
 	}
 	data := w.Bytes()
 	rf.persister.SaveRaftState(data)
-	Debug(dPersist, "S%d Persist States. T%d, votedFor:%d, log: %d", rf.me,
-		rf.currentTerm, rf.votedFor, len(rf.log))
+	//Debug(dPersist, "S%d Persist States. T%d, votedFor:%d, log: %d", rf.me,
+	//	rf.currentTerm, rf.votedFor, len(rf.log))
 }
 
 // restore previously persisted state.
@@ -58,7 +58,7 @@ func (rf *Raft) readPersist(data []byte) {
 		rf.currentTerm = currentTerm
 		rf.votedFor = votedFor
 		rf.log = log
-		Debug(dPersist, "S%d ReadPersist. State: T%d, votedFor%d, log: %d", rf.me,
-			rf.currentTerm, rf.votedFor, len(rf.log))
+		//Debug(dPersist, "S%d ReadPersist. State: T%d, votedFor%d, log: %d", rf.me,
+		//	rf.currentTerm, rf.votedFor, len(rf.log))
 	}
 }

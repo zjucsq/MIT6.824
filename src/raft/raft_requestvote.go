@@ -18,6 +18,7 @@ type RequestVoteReply struct {
 	// Your data here (2A).
 	Term        int  // currentTerm (for follower), for leader to update itself
 	VoteGranted bool // true means candidate received vote
+	LeaderTerm  int  // vote for which term's leader
 }
 
 // The ticker go routine starts a new election if this peer hasn't received
@@ -45,15 +46,15 @@ func (rf *Raft) voteTicker() {
 
 func (rf *Raft) startVote() {
 	rf.SetRandomExpireTime()
-	DebugELT(rf.me, rf.currentTerm+1, rf.eleExpireTime)
 	if rf.state == Follower {
 		rf.ToCandidate(FollowTimeout)
 	} else if rf.state == Candidate {
 		rf.ToCandidate(CandidateTimeout)
 	}
+	DebugELT(rf.me, rf.currentTerm, rf.eleExpireTime)
 	for i := range rf.peers {
 		if i != rf.me {
-			go rf.CallForVote(i, rf.currentTerm+1, rf.me, rf.GetLastIndex(), rf.GetLastTerm())
+			go rf.CallForVote(i, rf.currentTerm, rf.me, rf.GetLastIndex(), rf.GetLastTerm())
 		}
 	}
 }
@@ -71,14 +72,21 @@ func (rf *Raft) CallForVote(idx, term, candidate, lastIndex, lastTerm int) {
 	if ok {
 		rf.mu.Lock()
 		defer rf.mu.Unlock()
-		if reply.VoteGranted && rf.state == Candidate {
-			DebugGetVote(rf.me, idx, term)
-			rf.receiveVoteNum++
-			if rf.receiveVoteNum > len(rf.peers)/2 {
-				rf.ToLeader(term, CandidateReceiveMajor)
+		// Throw out-of-date reply
+		if rf.currentTerm == reply.LeaderTerm {
+			if reply.VoteGranted && rf.state == Candidate {
+				// First check whether already receive the idx's vote.
+				if rf.receiveVote[idx] == 0 {
+					rf.receiveVote[idx] = 1
+					DebugGetVote(rf.me, idx, term)
+					rf.receiveVoteNum++
+					if rf.receiveVoteNum > len(rf.peers)/2 {
+						rf.ToLeader(term, CandidateReceiveMajor)
+					}
+				}
+			} else if reply.Term > rf.currentTerm {
+				rf.ToFollower(reply.Term, CandidateDiscoverHigherTerm)
 			}
-		} else if reply.Term > rf.currentTerm {
-			rf.ToFollower(reply.Term, CandidateDiscoverHigherTerm)
 		}
 	} else {
 		// DebugRpcFail(dVote, "RequestVote")
@@ -125,6 +133,7 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 
 	reply.Term = rf.currentTerm
 	reply.VoteGranted = false
+	reply.LeaderTerm = args.Term
 	// The candidate has a smaller term, do not vote for it.
 	if args.Term < rf.currentTerm {
 		return
