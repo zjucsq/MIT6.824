@@ -24,18 +24,14 @@ type RequestVoteReply struct {
 // The ticker go routine starts a new election if this peer hasn't received
 // heartsbeats recently.
 func (rf *Raft) voteTicker() {
-	for rf.killed() == false {
+	for !rf.killed() {
 
 		time.Sleep(ELECTION_TIMER_RESOLUTION * time.Millisecond)
 		// Your code here to check if a leader election should
 		// be started and to randomize sleeping time using
 		// time.Sleep().
 		rf.mu.Lock()
-		if rf.state == Follower {
-			if time.Now().After(rf.eleExpireTime) {
-				rf.startVote()
-			}
-		} else if rf.state == Candidate {
+		if rf.state != Leader {
 			if time.Now().After(rf.eleExpireTime) {
 				rf.startVote()
 			}
@@ -47,7 +43,7 @@ func (rf *Raft) voteTicker() {
 func (rf *Raft) startVote() {
 	rf.SetRandomExpireTime()
 	if rf.state == Follower {
-		rf.ToCandidate(FollowTimeout)
+		rf.ToCandidate(FollowerTimeout)
 	} else if rf.state == Candidate {
 		rf.ToCandidate(CandidateTimeout)
 	}
@@ -73,19 +69,22 @@ func (rf *Raft) CallForVote(idx, term, candidate, lastIndex, lastTerm int) {
 		rf.mu.Lock()
 		defer rf.mu.Unlock()
 		// Throw out-of-date reply
-		if rf.currentTerm == reply.LeaderTerm {
-			if reply.VoteGranted && rf.state == Candidate {
-				// First check whether already receive the idx's vote.
-				if rf.receiveVote[idx] == 0 {
-					rf.receiveVote[idx] = 1
-					DebugGetVote(rf.me, idx, term)
-					rf.receiveVoteNum++
-					if rf.receiveVoteNum > len(rf.peers)/2 {
-						rf.ToLeader(term, CandidateReceiveMajor)
+		if rf.currentTerm == reply.LeaderTerm && rf.state == Candidate {
+			if reply.Term > rf.currentTerm {
+				rf.ToFollower(reply.Term, CandidateDiscoverHigherTerm)
+				// rf.SetRandomExpireTime()
+			} else {
+				if reply.VoteGranted {
+					// First check whether already receive the idx's vote.
+					if rf.receiveVote[idx] == 0 {
+						rf.receiveVote[idx] = 1
+						DebugGetVote(rf.me, idx, term)
+						rf.receiveVoteNum++
+						if rf.receiveVoteNum > len(rf.peers)/2 {
+							rf.ToLeader(term, CandidateReceiveMajor)
+						}
 					}
 				}
-			} else if reply.Term > rf.currentTerm {
-				rf.ToFollower(reply.Term, CandidateDiscoverHigherTerm)
 			}
 		}
 	} else {
@@ -140,13 +139,21 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 	}
 
 	if args.Term > rf.currentTerm {
-		rf.ToFollower(args.Term, CandidateDiscoverHigherTerm)
+		// rf.ToFollower(args.Term, CandidateDiscoverHigherTerm)
+		if rf.state == Leader {
+			Debug(dLog, "S%d get args from S%d: args.Term=%d, currentTerm=%d in RequestVote", rf.me, args.CandidateId, args.Term, rf.currentTerm)
+			rf.ToFollower(args.Term, LeaderDiscoverHigherTerm)
+		} else if rf.state == Candidate {
+			rf.ToFollower(args.Term, CandidateDiscoverHigherTerm)
+		} else if rf.state == Follower {
+			rf.ToFollower(args.Term, FollowerDiscoverHigherTerm)
+		}
+		// rf.SetRandomExpireTime()
 	}
 
 	if rf.votedFor == -1 || rf.votedFor == args.CandidateId {
-		lastIndex := len(rf.log) - 1
-		if rf.log[lastIndex].Term > args.LastLogTerm ||
-			(rf.log[lastIndex].Term == args.LastLogTerm && rf.log[lastIndex].Index > args.LastLogIndex) {
+		if rf.GetLastTerm() > args.LastLogTerm ||
+			(rf.GetLastTerm() == args.LastLogTerm && rf.GetLastIndex() > args.LastLogIndex) {
 			return
 		}
 		rf.votedFor = args.CandidateId
@@ -155,6 +162,4 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 		// rf.SetHeartBeatExpireTime()
 		rf.SetRandomExpireTime()
 	}
-
-	return
 }

@@ -6,4 +6,5 @@ api.key
 .idea/
 .vscode/
 src/raft/2023*/
+src/raft/2C/
 src/debug/output.log

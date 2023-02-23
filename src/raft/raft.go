@@ -39,12 +39,12 @@ type StateChangeReason string
 
 const (
 	Timeout                     StateChangeReason = "Timeout"
-	FollowTimeout               StateChangeReason = "FollowTimeout"
+	FollowerTimeout             StateChangeReason = "FollowerTimeout"
 	CandidateTimeout            StateChangeReason = "CandidateTimeout"
 	CandidateReceiveMajor       StateChangeReason = "CandidateReceiveMajor"
 	CandidateDiscoverHigherTerm StateChangeReason = "CandidateDiscoverHigherTerm"
 	LeaderDiscoverHigherTerm    StateChangeReason = "LeaderDiscoverHigherTerm"
-	DiscoverHigherTerm          StateChangeReason = "DiscoverHigherTerm"
+	FollowerDiscoverHigherTerm  StateChangeReason = "FollowerDiscoverHigherTerm"
 )
 
 const (
@@ -78,6 +78,7 @@ type Raft struct {
 	receiveVoteNum    int
 	appendId          int
 	receiveAppendId   []int
+	applyMsgCh        chan ApplyMsg
 	// Persistent state on all servers
 	currentTerm int
 	votedFor    int
@@ -88,38 +89,6 @@ type Raft struct {
 	// Volatile state on leaders
 	nextIndex  []int
 	matchIndex []int
-}
-
-// get the first dummy log index
-func (rf *Raft) GetFirstIndex() int {
-	return rf.log[0].Index
-}
-
-// get the first dummy log term
-func (rf *Raft) GetFirstTerm() int {
-	return rf.log[0].Term
-}
-
-// get the last log term
-func (rf *Raft) GetLastTerm() int {
-	return rf.log[len(rf.log)-1].Term
-}
-
-// get the last log index
-func (rf *Raft) GetLastIndex() int {
-	return rf.log[len(rf.log)-1].Index
-}
-
-// get the Term of index
-// compute the location in log and return the result
-func (rf *Raft) GetTermForIndex(index int) int {
-	return rf.log[index-rf.GetFirstIndex()].Term
-}
-
-// get the command of index
-// compute the location in log and return the result
-func (rf *Raft) GetCommand(index int) interface{} {
-	return rf.log[index-rf.GetFirstIndex()].Command
 }
 
 // return currentTerm and whether this server
@@ -231,6 +200,7 @@ func Make(peers []*labrpc.ClientEnd, me int,
 		state:             Follower,
 		heartBeatSendTime: expireTime,
 		eleExpireTime:     expireTime,
+		applyMsgCh:        applyCh,
 		//heartBeatExpireTime: expireTime,
 	}
 	rf.cv = sync.NewCond(&rf.mu)
@@ -254,7 +224,7 @@ func Make(peers []*labrpc.ClientEnd, me int,
 	go rf.appendTicker()
 
 	// Apply command
-	go rf.ApplyCmd(applyCh)
+	go rf.ApplyCmd()
 
 	return rf
 }

@@ -8,7 +8,7 @@ import (
 
 // For state change
 func (rf *Raft) ToFollower(term int, reason StateChangeReason) {
-	if reason != CandidateDiscoverHigherTerm && reason != LeaderDiscoverHigherTerm && reason != DiscoverHigherTerm {
+	if reason != CandidateDiscoverHigherTerm && reason != LeaderDiscoverHigherTerm && reason != FollowerDiscoverHigherTerm {
 		log.Fatalln("ToFollower wrong")
 	}
 	DebugToFollower(rf, term)
@@ -21,7 +21,7 @@ func (rf *Raft) ToFollower(term int, reason StateChangeReason) {
 }
 
 func (rf *Raft) ToCandidate(reason StateChangeReason) {
-	if reason != FollowTimeout && reason != CandidateTimeout {
+	if reason != FollowerTimeout && reason != CandidateTimeout {
 		log.Fatalln("ToCandidate wrong")
 	}
 	DebugToCandidate(rf)
@@ -44,7 +44,8 @@ func (rf *Raft) ToLeader(term int, reason StateChangeReason) {
 	rf.appendId = 0
 	Fill(&rf.receiveAppendId, 0)
 	Fill(&rf.matchIndex, 0)
-	Fill(&rf.nextIndex, len(rf.log))
+	Fill(&rf.nextIndex, rf.GetLastIndex()+1)
+	// Send heartbeat immediately
 	rf.SetHeartBeatSendTime(true)
 	// go rf.Start(nil)
 }
@@ -78,4 +79,42 @@ func Fill(array *[]int, num int) {
 	for i := range *array {
 		(*array)[i] = num
 	}
+}
+
+// get the first dummy log index
+func (rf *Raft) GetFirstIndex() int {
+	return rf.log[0].Index
+}
+
+// get the first dummy log term
+func (rf *Raft) GetFirstTerm() int {
+	return rf.log[0].Term
+}
+
+// get the last log term
+func (rf *Raft) GetLastTerm() int {
+	return rf.log[len(rf.log)-1].Term
+}
+
+// get the last log index
+func (rf *Raft) GetLastIndex() int {
+	return rf.log[len(rf.log)-1].Index
+}
+
+// get the Index of index
+// compute the location in log and return the result
+func (rf *Raft) GetIndexForIndex(index int) int {
+	return index - rf.GetFirstIndex()
+}
+
+// get the Term of index
+// compute the location in log and return the result
+func (rf *Raft) GetTermForIndex(index int) int {
+	return rf.log[index-rf.GetFirstIndex()].Term
+}
+
+// get the command of index
+// compute the location in log and return the result
+func (rf *Raft) GetCommand(index int) interface{} {
+	return rf.log[index-rf.GetFirstIndex()].Command
 }

@@ -21,7 +21,7 @@ type ApplyMsg struct {
 	SnapshotIndex int
 }
 
-func (rf *Raft) ApplyCmd(applyCh chan ApplyMsg) {
+func (rf *Raft) ApplyCmd() {
 	for !rf.killed() {
 		rf.mu.Lock()
 		for rf.lastApplied >= rf.commitIndex {
@@ -29,13 +29,14 @@ func (rf *Raft) ApplyCmd(applyCh chan ApplyMsg) {
 			// rf.applyCh <- msg这条语句可能会阻塞，因此执行这条语句前先释放锁，但构建msg的过程需要持有锁
 			rf.cv.Wait()
 		}
+		Debug(dCommit, "S%d trys to apply I%d-I%d firstIndex=%d log=%v", rf.me, rf.lastApplied+1, rf.commitIndex, rf.GetFirstIndex(), rf.log)
 		commitIndex := rf.commitIndex
 		lastApplied := rf.lastApplied
 		tmpLog := make([]LogEntry, commitIndex-lastApplied)
-		copy(tmpLog, rf.log[lastApplied+1:commitIndex+1])
+		copy(tmpLog, rf.log[rf.GetIndexForIndex(lastApplied+1):rf.GetIndexForIndex(commitIndex+1)])
 		rf.mu.Unlock()
 		for _, l := range tmpLog {
-			applyCh <- ApplyMsg{
+			rf.applyMsgCh <- ApplyMsg{
 				CommandValid: true,
 				Command:      l.Command,
 				CommandIndex: l.Index,

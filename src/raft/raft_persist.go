@@ -58,6 +58,8 @@ func (rf *Raft) readPersist(data []byte) {
 		rf.currentTerm = currentTerm
 		rf.votedFor = votedFor
 		rf.log = log
+		rf.commitIndex = rf.GetFirstIndex()
+		rf.lastApplied = rf.GetFirstIndex()
 		//Debug(dPersist, "S%d ReadPersist. State: T%d, votedFor%d, log: %d", rf.me,
 		//	rf.currentTerm, rf.votedFor, len(rf.log))
 	}
