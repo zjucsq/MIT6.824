@@ -62,3 +62,6 @@ func (cfg *config) one(cmd interface{}, expectedServers int, retry bool) int {}
 https://blog.csdn.net/qq_45795744/article/details/125929752
 slice can be seen as pointer, so remember to deep copy when use slice as the argument.
 
+## Lab2D
+
+some problem about apply, apply snapshot and logs may conflict.

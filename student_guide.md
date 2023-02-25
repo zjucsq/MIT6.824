@@ -45,21 +45,21 @@ In fact, Figure 2 is extremely precise, and every single statement it makes shou
 
 ## An aside on optimizations
 
+### log compaction (section 7)
 
+### accelerated log backtracking (top left hand side of page 8)
 
 # Applications on top of Raft
 
 ## Applying client operations
+
+
 
 ## Duplicate detection
 
 ## Hairy corner-cases
 
 
+## optimizations
 
-
-
-
-
-
-
+Read-only operations can be handled without writing anything into the log.
