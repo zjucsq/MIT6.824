@@ -27,6 +27,7 @@ type logTopic string
 const (
 	dError       logTopic = "ERROR"
 	dPersist     logTopic = "DPERS"
+	dSnap        logTopic = "DSNAP"
 	dWarn        logTopic = "DWARN"
 	dKVGet       logTopic = "KVGET"
 	dKVPut       logTopic = "KVPUT"

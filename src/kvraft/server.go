@@ -1,6 +1,7 @@
 package kvraft
 
 import (
+	"bytes"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -36,7 +37,7 @@ type OpResult struct {
 }
 
 type KVServer struct {
-	mu        sync.Mutex
+	// mu        sync.Mutex
 	me        int
 	rf        *raft.Raft
 	applyCh   chan raft.ApplyMsg
@@ -131,48 +132,44 @@ func (kv *KVServer) apply() {
 				ch.(chan OpResult) <- res
 			}
 			// kv.mu.Unlock()
+			// check whether need to snapshot
+			if kv.maxraftstate != -1 && kv.persister.RaftStateSize() >= 6*kv.maxraftstate {
+				snapshot := kv.makeSnapshot()
+				go kv.rf.Snapshot(cmd.CommandIndex, snapshot)
+				Debug(dSnap, "S%d KVServer Create Snapshot! IDX:%d, Snapshot:%v", kv.me, cmd.CommandIndex, snapshot)
+			}
 		} else if cmd.SnapshotValid {
-			// kv.applySnapshot(cmd.Snapshot)
+			kv.applySnapshot(cmd.Snapshot)
 		} else {
 			Debug(dWarn, "Unknown command")
 		}
 	}
 }
 
-//func (kv *KVServer) makeSnapshot() []byte {
-//	w := new(bytes.Buffer)
-//	e := labgob.NewEncoder(w)
-//	e.Encode(kv.kvmap)
-//	tmp := make(map[int64]int64)
-//	kv.mu.Lock()
-//	kv.maxSeq.Range(func(key, value any) bool {
-//		tmp[key.(int64)] = value.(int64)
-//		return true
-//	})
-//	kv.mu.Unlock()
-//	e.Encode(tmp)
-//	return w.Bytes()
-//}
+func (kv *KVServer) makeSnapshot() []byte {
+	w := new(bytes.Buffer)
+	e := labgob.NewEncoder(w)
+	e.Encode(kv.kvmap)
+	e.Encode(kv.maxSeq)
+	return w.Bytes()
+}
 
-//func (kv *KVServer) applySnapshot(snapshot []byte) {
-//	if len(snapshot) == 0 {
-//		return
-//	}
-//	r := bytes.NewBuffer(snapshot)
-//	d := labgob.NewDecoder(r)
-//	var kvmap map[string]string
-//	var maxSeq map[int64]uint64
-//	if d.Decode(&kvmap) != nil || d.Decode(&maxSeq) != nil {
-//		Debug(dError, "S%d KVServer Read Persist Error!", kv.me)
-//	} else {
-//		kv.kvmap = kvmap
-//		kv.mu.Lock()
-//		kv.client_to_last_process_seq = client_to_last_process_seq
-//		kv.client_to_last_process_result = client_to_last_process_result
-//		kv.mu.Unlock()
-//		Debug(dPersist, "S%d KVServer ReadPersist. Data: %v, Seq: %v", kv.me, kv.kvmap, kv.maxSeq)
-//	}
-//}
+func (kv *KVServer) applySnapshot(snapshot []byte) {
+	if len(snapshot) == 0 {
+		return
+	}
+	r := bytes.NewBuffer(snapshot)
+	d := labgob.NewDecoder(r)
+	var kvmap map[string]string
+	var maxSeq map[int64]int64
+	if d.Decode(&kvmap) != nil || d.Decode(&maxSeq) != nil {
+		Debug(dError, "S%d KVServer Read Persist Error!", kv.me)
+	} else {
+		kv.kvmap = kvmap
+		kv.maxSeq = maxSeq
+		Debug(dPersist, "S%d KVServer ReadPersist. Data: %v, Seq: %v", kv.me, kv.kvmap, kv.maxSeq)
+	}
+}
 
 func (kv *KVServer) Get(args *GetArgs, reply *GetReply) {
 	// Your code here.
@@ -306,9 +303,9 @@ func StartKVServer(servers []*labrpc.ClientEnd, me int, persister *raft.Persiste
 	// kv.resChs = make(map[int]chan OpResult)
 
 	// snapshot
-	//snapshot := persister.ReadSnapshot()
-	//kv.applySnapshot(snapshot)
-	//kv.persister = persister
+	snapshot := persister.ReadSnapshot()
+	kv.applySnapshot(snapshot)
+	kv.persister = persister
 
 	// apply cmd to kvserver
 	go kv.apply()
