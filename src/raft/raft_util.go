@@ -82,6 +82,11 @@ func Fill(array *[]int, num int) {
 }
 
 // get the first dummy log index
+func (rf *Raft) GetLogLength() int {
+	return len(rf.log)
+}
+
+// get the first dummy log index
 func (rf *Raft) GetFirstIndex() int {
 	return rf.log[0].Index
 }

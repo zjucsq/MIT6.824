@@ -45,7 +45,7 @@ func MakeClerk(servers []*labrpc.ClientEnd) *Clerk {
 func (ck *Clerk) Get(key string) string {
 
 	// You will have to modify this function.
-	Debug(dCLGet, "C%d Begin Send Get. Key: %s.", ck.clientId, key)
+	Debug(dCLGet, "C%d Begin Send Get. Key: %s. init leaderId=%d", ck.clientId, key, ck.leaderId)
 	args := GetArgs{
 		Key: key,
 	}
@@ -57,15 +57,19 @@ func (ck *Clerk) Get(key string) string {
 		ok := ck.servers[leaderId].Call("KVServer.Get", &args, &reply)
 		// For ErrNoKey, return ""
 		if !ok || (reply.Err != OK && reply.Err != ErrNoKey) {
-			if reply.Err != ErrWrongLeader {
-				Debug(dCLGet, "C%d Try Get in leaderId=%d.", ck.clientId, leaderId)
-			}
+			// if reply.Err == ErrWrongLeader {
+			// 	Debug(dCLGet, "C%d Try Get in leaderId=%d failed because it is not leader.", ck.clientId, leaderId)
+			// } else if reply.Err == ErrTimeout {
+			// 	Debug(dCLGet, "C%d Try Get in leaderId=%d failed because timeout.", ck.clientId, leaderId)
+			// } else {
+			// 	Debug(dCLGet, "C%d Try Get in leaderId=%d failed because other unknown reason=%s.", ck.clientId, leaderId, reply.Err)
+			// }
 			leaderId = (leaderId + 1) % len(ck.servers)
 			continue
 		}
 
 		ck.leaderId = leaderId
-		Debug(dCLGet, "C%d Get Success. leaderId=%d.", ck.clientId, ck.leaderId)
+		Debug(dCLGet, "C%d Get Success. leaderId=%d key=%s value=%s.", ck.clientId, ck.leaderId, key, reply.Value)
 		return reply.Value
 	}
 }
@@ -80,7 +84,7 @@ func (ck *Clerk) Get(key string) string {
 // arguments. and reply must be passed as a pointer.
 func (ck *Clerk) PutAppend(key string, value string, op string) {
 	// You will have to modify this function.
-	Debug(dCLPutAppend, "C%d Begin Send PutAppend. Key: %s, Val: %s, Op: %s. requestId=%d.", ck.clientId, key, value, op, ck.requestId)
+	Debug(dCLPutAppend, "C%d Begin Send PutAppend. Key: %s, Val: %s, Op: %s. requestId=%d init leaderId=%d.", ck.clientId, key, value, op, ck.requestId, ck.leaderId)
 	args := PutAppendArgs{
 		Key:       key,
 		Value:     value,
@@ -95,9 +99,13 @@ func (ck *Clerk) PutAppend(key string, value string, op string) {
 		reply := PutAppendReply{}
 		ok := ck.servers[leaderId].Call("KVServer.PutAppend", &args, &reply)
 		if !ok || reply.Err != OK {
-			if reply.Err != ErrWrongLeader {
-				Debug(dCLPutAppend, "C%d Try PutAppend in leaderId=%d.", ck.clientId, leaderId)
-			}
+			// if reply.Err == ErrWrongLeader {
+			// 	Debug(dCLPutAppend, "C%d Try PutAppend in leaderId=%d failed because it is not leader.", ck.clientId, leaderId)
+			// } else if reply.Err == ErrTimeout {
+			// 	Debug(dCLPutAppend, "C%d Try PutAppend in leaderId=%d failed because timeout.", ck.clientId, leaderId)
+			// } else {
+			// 	Debug(dCLPutAppend, "C%d Try PutAppend in leaderId=%d failed because other unknown reason=%s.", ck.clientId, leaderId, reply.Err)
+			// }
 			leaderId = (leaderId + 1) % len(ck.servers)
 			continue
 		}

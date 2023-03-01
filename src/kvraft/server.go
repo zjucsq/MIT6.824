@@ -68,10 +68,9 @@ func (kv *KVServer) applyOne(op Op) OpResult {
 			if maxReq < op.ClientSeq {
 				kv.maxSeq[op.ClientId] = op.ClientSeq
 				kv.kvmap[op.Key] = op.Value
-				//Debug(dKVPut, "KV%d update maxseq from %d to %d", kv.me, maxReq.(int64), op.ClientSeq)
-				//Debug(dKVPut, "KV%d Put in map. key=%s, value=%s", kv.me, op.Key, kv.kvmap[op.Key])
+				// Debug(dKVPut, "KV%d Put in map. key=%s, value=%s", kv.me, op.Key, kv.kvmap[op.Key])
 			} else {
-				Debug(dKVPut, "KV%d Put duplicate because key=%s, value=%s", kv.me, op.Key, kv.kvmap[op.Key])
+				// Debug(dKVPut, "KV%d duplicate Put in map key=%s, value=%s maxReq=%d op.ClientSeq=%d", kv.me, op.Key, kv.kvmap[op.Key], maxReq, op.ClientSeq)
 			}
 		}
 		//if maxReq, ok := kv.maxSeq.Load(op.ClientId); !ok {
@@ -96,6 +95,9 @@ func (kv *KVServer) applyOne(op Op) OpResult {
 			if maxReq < op.ClientSeq {
 				kv.maxSeq[op.ClientId] = op.ClientSeq
 				kv.kvmap[op.Key] += op.Value
+				// Debug(dKVAppend, "KV%d Append in map. key=%s, value=%s", kv.me, op.Key, kv.kvmap[op.Key])
+			} else {
+				// Debug(dKVPut, "KV%d duplicate Append in map key=%s, value=%s maxReq=%d op.ClientSeq=%d", kv.me, op.Key, kv.kvmap[op.Key], maxReq, op.ClientSeq)
 			}
 		}
 		//if maxReq, ok := kv.maxSeq.Load(op.ClientId); !ok {
@@ -112,10 +114,10 @@ func (kv *KVServer) applyOne(op Op) OpResult {
 	case GET:
 		if value, ok := kv.kvmap[op.Key]; !ok {
 			res.Error = ErrNoKey
-			// Debug(dKVGet, "KV%d Get in map failed, no key=%s", kv.me, op.Key)
+			//Debug(dKVGet, "KV%d Get in map failed, no key=%s", kv.me, op.Key)
 		} else {
 			res.Value = value
-			// Debug(dKVGet, "KV%d Get in map. key=%s, value=%s", kv.me, op.Key, res.Value)
+			// Debug(dKVGet, "KV%d Get in map in applyone. key=%s, value=%s", kv.me, op.Key, res.Value)
 		}
 	}
 	return res
@@ -125,6 +127,7 @@ func (kv *KVServer) apply() {
 	for cmd := range kv.applyCh {
 		if cmd.CommandValid {
 			op := cmd.Command.(Op)
+			Debug(dSnap, "S%d KVServer receive command! IDX:%d, type:%s, key:%s, value:%s", kv.me, cmd.CommandIndex, op.Type, op.Key, op.Value)
 			res := kv.applyOne(op)
 			// kv.mu.Lock()
 			// if ch, ok := kv.resChs[cmd.CommandIndex]; ok {
@@ -133,13 +136,21 @@ func (kv *KVServer) apply() {
 			}
 			// kv.mu.Unlock()
 			// check whether need to snapshot
+			Debug(dSnap, "S%d check log length=%d max=%d", kv.me, kv.persister.RaftStateSize(), kv.maxraftstate)
 			if kv.maxraftstate != -1 && kv.persister.RaftStateSize() >= 6*kv.maxraftstate {
 				snapshot := kv.makeSnapshot()
 				go kv.rf.Snapshot(cmd.CommandIndex, snapshot)
 				Debug(dSnap, "S%d KVServer Create Snapshot! IDX:%d, Snapshot:%v", kv.me, cmd.CommandIndex, snapshot)
 			}
 		} else if cmd.SnapshotValid {
+			Debug(dSnap, "S%d KVServer receive Snapshot!", kv.me)
 			kv.applySnapshot(cmd.Snapshot)
+			Debug(dSnap, "S%d KVServer receive Snapshot! now log length=%d ", kv.me, kv.persister.RaftStateSize())
+			// if kv.maxraftstate != -1 && kv.persister.RaftStateSize() >= kv.maxraftstate {
+			// 	snapshot := kv.makeSnapshot()
+			// 	go kv.rf.Snapshot(cmd.CommandIndex, snapshot)
+			// 	Debug(dSnap, "S%d KVServer Create Snapshot! IDX:%d, Snapshot:%v", kv.me, cmd.CommandIndex, snapshot)
+			// }
 		} else {
 			Debug(dWarn, "Unknown command")
 		}
@@ -173,12 +184,17 @@ func (kv *KVServer) applySnapshot(snapshot []byte) {
 
 func (kv *KVServer) Get(args *GetArgs, reply *GetReply) {
 	// Your code here.
+	// if kv.persister.RaftStateSize() > 6*kv.maxraftstate {
+	// 	reply.Err = ErrLogTooLong
+	// 	return
+	// }
+
 	op := Op{
 		Type:  GET,
 		Key:   args.Key,
 		Value: "",
 	}
-
+	// Debug(dKVAppend, "KV%d Start Get. key=%s, value=%s", kv.me, op.Key, op.Value)
 	index, _, isLeader := kv.rf.Start(op)
 	if !isLeader {
 		reply.Err = ErrWrongLeader
@@ -198,13 +214,25 @@ func (kv *KVServer) Get(args *GetArgs, reply *GetReply) {
 		reply.Value = res.Value
 		reply.Err = res.Error
 	}
-	//if reply.Err == OK {
-	//	Debug(dCLGet, "KV%d Get in map sucess. key=%s, value=%s", kv.me, op.Key, reply.Value)
-	//}
+	// if reply.Err == OK {
+	// 	Debug(dCLGet, "KV%d Get in map sucess. key=%s, value=%s", kv.me, op.Key, reply.Value)
+	// } else if reply.Err == ErrTimeout {
+	// 	Debug(dCLGet, "KV%d Get in map timeout. key=%s, value=%s", kv.me, op.Key, reply.Value)
+	// }
 	// kv.mu.Lock()
 	// delete(kv.resChs, index)
 	// kv.mu.Unlock()
 	kv.resChs.Delete(index)
+
+	// Double check is important, a server may think it is leader in the first check, but then it may step down.
+	// If so, the chan may reveive wrong log. (we use index to differentiate log, but the log may be overwrite by new leader)
+	// this may not perfect because a leader can election -> step down -> election.
+	// Another way is using a random id or an uuid to construct chan.
+	// Another way is checking leader is apply function
+	if _, isLeader := kv.rf.GetState(); !isLeader {
+		reply.Err = ErrWrongLeader
+		return
+	}
 }
 
 func (kv *KVServer) PutAppend(args *PutAppendArgs, reply *PutAppendReply) {
@@ -217,6 +245,11 @@ func (kv *KVServer) PutAppend(args *PutAppendArgs, reply *PutAppendReply) {
 	//	}
 	//}
 
+	// if kv.persister.RaftStateSize() > 6*kv.maxraftstate {
+	// 	reply.Err = ErrLogTooLong
+	// 	return
+	// }
+
 	op := Op{
 		Type:      args.Op,
 		Key:       args.Key,
@@ -225,6 +258,7 @@ func (kv *KVServer) PutAppend(args *PutAppendArgs, reply *PutAppendReply) {
 		ClientSeq: args.RequestId,
 	}
 
+	// Debug(dKVAppend, "KV%d Start PutAppend. key=%s, value=%s", kv.me, op.Key, op.Value)
 	index, _, isLeader := kv.rf.Start(op)
 	if !isLeader {
 		reply.Err = ErrWrongLeader
@@ -243,13 +277,21 @@ func (kv *KVServer) PutAppend(args *PutAppendArgs, reply *PutAppendReply) {
 	case res := <-tmpCh:
 		reply.Err = res.Error
 	}
-	if reply.Err == OK {
-		Debug(dKVAppend, "KV%d PutAppend in map success. key=%s, value=%s", kv.me, op.Key, op.Value)
-	}
+	// if reply.Err == OK {
+	// 	Debug(dKVAppend, "KV%d PutAppend in map success. key=%s, value=%s", kv.me, op.Key, op.Value)
+	// } else if reply.Err == ErrTimeout {
+	// 	Debug(dKVAppend, "KV%d PutAppend in map timeout. key=%s, value=%s", kv.me, op.Key, op.Value)
+	// } else {
+	// 	Debug(dKVAppend, "KV%d PutAppend in map other situations. error=%s", kv.me, reply.Err)
+	// }
 	// kv.mu.Lock()
 	// delete(kv.resChs, index)
 	// kv.mu.Unlock()
 	kv.resChs.Delete(index)
+	if _, isLeader := kv.rf.GetState(); !isLeader {
+		reply.Err = ErrWrongLeader
+		return
+	}
 }
 
 // the tester calls Kill() when a KVServer instance won't

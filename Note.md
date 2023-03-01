@@ -65,3 +65,8 @@ slice can be seen as pointer, so remember to deep copy when use slice as the arg
 ## Lab2D
 
 some problem about apply, apply snapshot and logs may conflict.
+
+# lab3
+
+- Duplicate request
+- Timeout
