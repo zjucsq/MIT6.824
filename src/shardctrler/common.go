@@ -28,14 +28,45 @@ type Config struct {
 	Groups map[int][]string // gid -> servers[]
 }
 
+func (src *Config) deepcopyConfig() Config {
+	dst := Config{
+		Num:    src.Num,
+		Groups: make(map[int][]string),
+	}
+	for i, s := range src.Shards {
+		dst.Shards[i] = s
+	}
+	for k, v := range src.Groups {
+		dst.Groups[k] = make([]string, len(v))
+		for i, s := range v {
+			dst.Groups[k][i] = s
+		}
+	}
+	return dst
+}
+
 const (
-	OK = "OK"
+	JOIN  = "Join"
+	MOVE  = "Move"
+	LEAVE = "Leave"
+	QUERY = "Query"
+)
+
+const (
+	OK         = "OK"
+	ErrTimeout = "ErrTimeout"
+)
+
+const (
+	TIMEOUT = 100
 )
 
 type Err string
 
 type JoinArgs struct {
-	Servers map[int][]string // new GID -> servers mappings
+	Servers   map[int][]string // new GID -> servers mappings
+	RequestId int64
+	ClientId  int64
 }
 
 type JoinReply struct {
@@ -44,7 +75,9 @@ type JoinReply struct {
 }
 
 type LeaveArgs struct {
-	GIDs []int
+	GIDs      []int
+	RequestId int64
+	ClientId  int64
 }
 
 type LeaveReply struct {
@@ -53,8 +86,10 @@ type LeaveReply struct {
 }
 
 type MoveArgs struct {
-	Shard int
-	GID   int
+	Shard     int
+	GID       int
+	RequestId int64
+	ClientId  int64
 }
 
 type MoveReply struct {

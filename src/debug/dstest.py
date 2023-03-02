@@ -152,6 +152,8 @@ def run_tests(
             os.environ['VERBOSE'] = str(verbose)
         if verbose & 2 != 0:
             os.environ['VERBOSEKV'] = str(verbose)
+        if verbose & 4 != 0:
+            os.environ['VERBOSECTRLER'] = str(verbose)
 
     while True:
 
