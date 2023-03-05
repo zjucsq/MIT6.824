@@ -114,20 +114,20 @@ func (sc *ShardCtrler) applyOne(op Op) OpResult {
 	// Then do the command
 	switch op.Type {
 	case JOIN:
-		sc.curConfig = sc.configs[len(sc.configs)-1].deepcopyConfig()
+		sc.curConfig = sc.configs[len(sc.configs)-1].DeepcopyConfig()
 		sc.curConfig.Num++
 		for gid, servers := range op.Servers {
-			Debug(dSCJoin, "SC%d add gid=%d servers=%v", sc.me, gid, servers)
+			// Debug(dSCJoin, "SC%d add gid=%d servers=%v", sc.me, gid, servers)
 			sc.curConfig.Groups[gid] = servers
 			sc.gidList = append(sc.gidList, gid)
 		}
 		sort.Ints(sc.gidList)
-		Debug(dSCJoin, "SC%d new config=%v", sc.me, sc.curConfig)
+		// Debug(dSCJoin, "SC%d new config=%v", sc.me, sc.curConfig)
 		sc.rebalance()
 		sc.configs = append(sc.configs, sc.curConfig)
-		Debug(dSCJoin, "SC%d join finish new configs=%v", sc.me, sc.configs)
+		// Debug(dSCJoin, "SC%d join finish new configs=%v", sc.me, sc.configs)
 	case LEAVE:
-		sc.curConfig = sc.configs[len(sc.configs)-1].deepcopyConfig()
+		sc.curConfig = sc.configs[len(sc.configs)-1].DeepcopyConfig()
 		sc.curConfig.Num++
 		for _, GID := range op.GIDs {
 			sc.leaveOne(GID)
@@ -135,7 +135,7 @@ func (sc *ShardCtrler) applyOne(op Op) OpResult {
 		sc.rebalance()
 		sc.configs = append(sc.configs, sc.curConfig)
 	case MOVE:
-		sc.curConfig = sc.configs[len(sc.configs)-1].deepcopyConfig()
+		sc.curConfig = sc.configs[len(sc.configs)-1].DeepcopyConfig()
 		sc.curConfig.Num++
 		orgGid := sc.curConfig.Shards[op.Shard]
 		sc.curConfig.Shards[op.Shard] = op.GID
@@ -151,13 +151,13 @@ func (sc *ShardCtrler) applyOne(op Op) OpResult {
 		sc.configs = append(sc.configs, sc.curConfig)
 	case QUERY:
 		if op.Num < len(sc.configs) {
-			Debug(dSCQuery, "SC%d now configs=%v, want config id=%d", sc.me, sc.configs, op.Num)
+			// Debug(dSCQuery, "SC%d now configs=%v, want config id=%d", sc.me, sc.configs, op.Num)
 			if op.Num == -1 {
 				res.Config = sc.configs[len(sc.configs)-1]
 			} else {
 				res.Config = sc.configs[op.Num]
 			}
-			Debug(dSCQuery, "SC%d ret configs=%v", sc.me, res.Config)
+			// Debug(dSCQuery, "SC%d ret configs=%v", sc.me, res.Config)
 		} else {
 			Debug(dWarn, "Query out of bounds")
 		}
@@ -181,14 +181,14 @@ func (sc *ShardCtrler) apply() {
 	}
 }
 
-func (sc *ShardCtrler) printReturnState(t string, wrongleader bool, err string) {
-	Debug(dLogs, "SC%d %s return, wrongleader=%t, err=%s", sc.me, t, wrongleader, err)
+func (sc *ShardCtrler) printReturnState(t string, wrongleader bool, err *Err) {
+	Debug(dLogs, "SC%d %s return, wrongleader=%t, err=%s", sc.me, t, wrongleader, *err)
 }
 
 func (sc *ShardCtrler) Join(args *JoinArgs, reply *JoinReply) {
 	// Your code here.
 	Debug(dSCJoin, "SC%d Start join, servers=%v", sc.me, args.Servers)
-	defer sc.printReturnState(JOIN, reply.WrongLeader, string(reply.Err))
+	defer sc.printReturnState(JOIN, reply.WrongLeader, &reply.Err)
 
 	op := Op{
 		Type:      JOIN,
@@ -199,6 +199,7 @@ func (sc *ShardCtrler) Join(args *JoinArgs, reply *JoinReply) {
 
 	index, _, isLeader := sc.rf.Start(op)
 	if !isLeader {
+		reply.Err = ErrWrongLeader
 		reply.WrongLeader = true
 		return
 	}
@@ -215,6 +216,7 @@ func (sc *ShardCtrler) Join(args *JoinArgs, reply *JoinReply) {
 
 	sc.resChs.Delete(index)
 	if _, isLeader := sc.rf.GetState(); !isLeader {
+		reply.Err = ErrWrongLeader
 		reply.WrongLeader = true
 		return
 	}
@@ -223,7 +225,7 @@ func (sc *ShardCtrler) Join(args *JoinArgs, reply *JoinReply) {
 func (sc *ShardCtrler) Leave(args *LeaveArgs, reply *LeaveReply) {
 	// Your code here.
 	Debug(dSCLeave, "SC%d Start leave, gids=%v", sc.me, args.GIDs)
-	defer sc.printReturnState(LEAVE, reply.WrongLeader, string(reply.Err))
+	defer sc.printReturnState(LEAVE, reply.WrongLeader, &reply.Err)
 
 	op := Op{
 		Type:      LEAVE,
@@ -234,6 +236,7 @@ func (sc *ShardCtrler) Leave(args *LeaveArgs, reply *LeaveReply) {
 
 	index, _, isLeader := sc.rf.Start(op)
 	if !isLeader {
+		reply.Err = ErrWrongLeader
 		reply.WrongLeader = true
 		return
 	}
@@ -250,6 +253,7 @@ func (sc *ShardCtrler) Leave(args *LeaveArgs, reply *LeaveReply) {
 
 	sc.resChs.Delete(index)
 	if _, isLeader := sc.rf.GetState(); !isLeader {
+		reply.Err = ErrWrongLeader
 		reply.WrongLeader = true
 		return
 	}
@@ -258,7 +262,7 @@ func (sc *ShardCtrler) Leave(args *LeaveArgs, reply *LeaveReply) {
 func (sc *ShardCtrler) Move(args *MoveArgs, reply *MoveReply) {
 	// Your code here.
 	Debug(dSCMove, "SC%d Start move, gid=%d, shard=%d", sc.me, args.GID, args.Shard)
-	defer sc.printReturnState(MOVE, reply.WrongLeader, string(reply.Err))
+	defer sc.printReturnState(MOVE, reply.WrongLeader, &reply.Err)
 
 	op := Op{
 		Type:      MOVE,
@@ -270,6 +274,7 @@ func (sc *ShardCtrler) Move(args *MoveArgs, reply *MoveReply) {
 
 	index, _, isLeader := sc.rf.Start(op)
 	if !isLeader {
+		reply.Err = ErrWrongLeader
 		reply.WrongLeader = true
 		return
 	}
@@ -286,6 +291,7 @@ func (sc *ShardCtrler) Move(args *MoveArgs, reply *MoveReply) {
 
 	sc.resChs.Delete(index)
 	if _, isLeader := sc.rf.GetState(); !isLeader {
+		reply.Err = ErrWrongLeader
 		reply.WrongLeader = true
 		return
 	}
@@ -294,7 +300,7 @@ func (sc *ShardCtrler) Move(args *MoveArgs, reply *MoveReply) {
 func (sc *ShardCtrler) Query(args *QueryArgs, reply *QueryReply) {
 	// Your code here.
 	Debug(dSCQuery, "SC%d Start query, num=%v", sc.me, args.Num)
-	defer sc.printReturnState(QUERY, reply.WrongLeader, string(reply.Err))
+	defer sc.printReturnState(QUERY, reply.WrongLeader, &reply.Err)
 
 	op := Op{
 		Type: QUERY,
@@ -303,6 +309,7 @@ func (sc *ShardCtrler) Query(args *QueryArgs, reply *QueryReply) {
 
 	index, _, isLeader := sc.rf.Start(op)
 	if !isLeader {
+		reply.Err = ErrWrongLeader
 		reply.WrongLeader = true
 		return
 	}
@@ -320,6 +327,7 @@ func (sc *ShardCtrler) Query(args *QueryArgs, reply *QueryReply) {
 
 	sc.resChs.Delete(index)
 	if _, isLeader := sc.rf.GetState(); !isLeader {
+		reply.Err = ErrWrongLeader
 		reply.WrongLeader = true
 		return
 	}

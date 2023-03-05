@@ -1,4 +1,4 @@
-package shardctrler
+package shardkv
 
 import (
 	"fmt"
@@ -10,7 +10,7 @@ import (
 
 // Retrieve the verbosity level from an environment variable
 func getVerbosity() int {
-	v := os.Getenv("VERBOSECTRLER")
+	v := os.Getenv("VERBOSESHARDKV")
 	level := 0
 	if v != "" {
 		var err error
@@ -25,19 +25,19 @@ func getVerbosity() int {
 type logTopic string
 
 const (
-	dLogs    logTopic = "CRTDLOGS"
-	dError   logTopic = "CRTERROR"
-	dPersist logTopic = "CRTDPERS"
-	dSnap    logTopic = "CRTDSNAP"
-	dWarn    logTopic = "CRTDWARN"
-	dSCJoin  logTopic = "CRTSCJOI"
-	dSCMove  logTopic = "CRTSCMOV"
-	dSCLeave logTopic = "CRTSCLEA"
-	dSCQuery logTopic = "CRTSCQUE"
-	// dCLGet       logTopic = "CLGET"
-	// dCLPut       logTopic = "CLPUT"
-	// dCLAppend    logTopic = "CLAPP"
-	// dCLPutAppend logTopic = "CLPPP"
+	dError       logTopic = "SKVERROR"
+	dPersist     logTopic = "SKVDPERS"
+	dSnap        logTopic = "SKVDSNAP"
+	dWarn        logTopic = "SKVDWARN"
+	dKVGet       logTopic = "SKVKVGET"
+	dKVPut       logTopic = "SKVKVPUT"
+	dKVAppend    logTopic = "SKVKVAPP"
+	dKVPutAppend logTopic = "SKVKVPPP"
+	dKVConfig    logTopic = "SKVKVCOF"
+	dCLGet       logTopic = "SKVCLGET"
+	dCLPut       logTopic = "SKVCLPUT"
+	dCLAppend    logTopic = "SKVCLAPP"
+	dCLPutAppend logTopic = "SKVCLPPP"
 )
 
 var debugStart time.Time

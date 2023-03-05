@@ -1,0 +1,692 @@
+Test: static shards ...
+000068 CRTSCJOI SC0 Start join, servers=map[100:[server-100-0 server-100-1 server-100-2]]
+000068 CRTDLOGS SC0 Join return, wrongleader=false, err=
+000083 CRTSCJOI SC1 Start join, servers=map[100:[server-100-0 server-100-1 server-100-2]]
+000085 CRTDLOGS SC1 Join return, wrongleader=false, err=
+000101 CRTSCJOI SC2 Start join, servers=map[100:[server-100-0 server-100-1 server-100-2]]
+000102 CRTDLOGS SC2 Join return, wrongleader=false, err=
+001130 CRTSCJOI SC0 Start join, servers=map[100:[server-100-0 server-100-1 server-100-2]]
+001132 CRTDLOGS SC0 Join return, wrongleader=false, err=
+001149 CRTSCJOI SC1 Start join, servers=map[100:[server-100-0 server-100-1 server-100-2]]
+001151 CRTDLOGS SC1 Join return, wrongleader=false, err=
+001165 CRTSCJOI SC2 Start join, servers=map[100:[server-100-0 server-100-1 server-100-2]]
+001166 CRTDLOGS SC2 Join return, wrongleader=false, err=
+002029 CRTSCQUE CK1494271722060346988 Start Query, num=-1
+002040 CRTSCQUE SC0 Start query, num=-1
+002040 CRTDLOGS SC0 Query return, wrongleader=false, err=
+002063 CRTSCQUE SC1 Start query, num=-1
+002064 CRTDLOGS SC1 Query return, wrongleader=false, err=
+002082 CRTSCQUE SC2 Start query, num=-1
+002124 CRTDLOGS SC2 Query return, wrongleader=false, err=OK
+002181 CRTSCJOI SC0 Start join, servers=map[100:[server-100-0 server-100-1 server-100-2]]
+002182 CRTDLOGS SC0 Join return, wrongleader=false, err=
+002196 CRTSCJOI SC1 Start join, servers=map[100:[server-100-0 server-100-1 server-100-2]]
+002197 CRTDLOGS SC1 Join return, wrongleader=false, err=
+002211 CRTSCJOI SC2 Start join, servers=map[100:[server-100-0 server-100-1 server-100-2]]
+002258 CRTDLOGS SC2 Join return, wrongleader=false, err=OK
+002272 CRTSCJOI SC0 Start join, servers=map[101:[server-101-0 server-101-1 server-101-2]]
+002273 CRTDLOGS SC0 Join return, wrongleader=false, err=
+002289 CRTSCJOI SC1 Start join, servers=map[101:[server-101-0 server-101-1 server-101-2]]
+002290 CRTDLOGS SC1 Join return, wrongleader=false, err=
+002303 CRTSCJOI SC2 Start join, servers=map[101:[server-101-0 server-101-1 server-101-2]]
+002345 CRTDLOGS SC2 Join return, wrongleader=false, err=OK
+003062 CRTSCQUE CK3417034178542754697 Start Query, num=-1
+003070 CRTSCQUE SC0 Start query, num=-1
+003070 CRTDLOGS SC0 Query return, wrongleader=false, err=
+003073 CRTSCQUE CK1971501632050421639 Start Query, num=-1
+003082 CRTSCQUE SC0 Start query, num=-1
+003083 CRTDLOGS SC0 Query return, wrongleader=false, err=
+003088 CRTSCQUE SC1 Start query, num=-1
+003088 CRTDLOGS SC1 Query return, wrongleader=false, err=
+003101 CRTSCQUE SC1 Start query, num=-1
+003102 CRTDLOGS SC1 Query return, wrongleader=false, err=
+003105 CRTSCQUE SC2 Start query, num=-1
+003120 CRTSCQUE SC2 Start query, num=-1
+003144 CRTDLOGS SC2 Query return, wrongleader=false, err=OK
+003154 CRTSCQUE CK1494271722060346988 Start Query, num=-1
+003155 SKVKVCOF S2 KVServer acquire new config! config={2 [101 101 101 101 101 100 100 100 100 100] map[100:[server-100-0 server-100-1 server-100-2] 101:[server-101-0 server-101-1 server-101-2]]}
+003162 CRTSCQUE SC0 Start query, num=-1
+003162 CRTDLOGS SC0 Query return, wrongleader=false, err=
+003169 CRTDLOGS SC2 Query return, wrongleader=false, err=OK
+003178 CRTSCQUE SC1 Start query, num=-1
+003179 CRTDLOGS SC1 Query return, wrongleader=false, err=
+003179 SKVKVCOF S2 KVServer acquire new config! config={2 [101 101 101 101 101 100 100 100 100 100] map[100:[server-100-0 server-100-1 server-100-2] 101:[server-101-0 server-101-1 server-101-2]]}
+003193 CRTSCQUE SC2 Start query, num=-1
+003199 SKVDSNAP S2 KVServer receive configOp! IDX:1, config={2 [101 101 101 101 101 100 100 100 100 100] map[100:[server-100-0 server-100-1 server-100-2] 101:[server-101-0 server-101-1 server-101-2]]}
+003201 SKVKVCOF S2 KVServer start apply configOp={{2 [101 101 101 101 101 100 100 100 100 100] map[100:[server-100-0 server-100-1 server-100-2] 101:[server-101-0 server-101-1 server-101-2]]}}, op.NewConfig.Num=2, kv.currentConfig.Num=0
+003224 CRTDLOGS SC2 Query return, wrongleader=false, err=OK
+003224 SKVDSNAP S2 KVServer receive configOp! IDX:1, config={2 [101 101 101 101 101 100 100 100 100 100] map[100:[server-100-0 server-100-1 server-100-2] 101:[server-101-0 server-101-1 server-101-2]]}
+003225 SKVKVCOF S2 KVServer start apply configOp={{2 [101 101 101 101 101 100 100 100 100 100] map[100:[server-100-0 server-100-1 server-100-2] 101:[server-101-0 server-101-1 server-101-2]]}}, op.NewConfig.Num=2, kv.currentConfig.Num=0
+003231 SKVKVCOF S0 KVServer acquire new config! config={2 [101 101 101 101 101 100 100 100 100 100] map[100:[server-100-0 server-100-1 server-100-2] 101:[server-101-0 server-101-1 server-101-2]]}
+003267 SKVDSNAP S0 KVServer receive configOp! IDX:1, config={2 [101 101 101 101 101 100 100 100 100 100] map[100:[server-100-0 server-100-1 server-100-2] 101:[server-101-0 server-101-1 server-101-2]]}
+003269 SKVKVCOF S0 KVServer start apply configOp={{2 [101 101 101 101 101 100 100 100 100 100] map[100:[server-100-0 server-100-1 server-100-2] 101:[server-101-0 server-101-1 server-101-2]]}}, op.NewConfig.Num=2, kv.currentConfig.Num=0
+003358 CRTSCQUE CK1032439838088694310 Start Query, num=-1
+003364 CRTSCQUE SC0 Start query, num=-1
+003364 CRTDLOGS SC0 Query return, wrongleader=false, err=
+003374 CRTSCQUE SC1 Start query, num=-1
+003375 CRTDLOGS SC1 Query return, wrongleader=false, err=
+003384 CRTSCQUE SC2 Start query, num=-1
+003425 CRTDLOGS SC2 Query return, wrongleader=false, err=OK
+003434 SKVCLPPP C1306488752219840049 Begin Send PutAppend to serverserver-100-0. Key: 0, Val: mOga-EidqvktxaLjjjRM, Op: Put. requestId=1.
+004167 CRTSCQUE CK3417034178542754697 Start Query, num=-1
+004175 CRTSCQUE SC0 Start query, num=-1
+004176 CRTDLOGS SC0 Query return, wrongleader=false, err=
+004180 SKVDSNAP S1 KVServer receive configOp! IDX:1, config={2 [101 101 101 101 101 100 100 100 100 100] map[100:[server-100-0 server-100-1 server-100-2] 101:[server-101-0 server-101-1 server-101-2]]}
+004182 SKVKVCOF S1 KVServer start apply configOp={{2 [101 101 101 101 101 100 100 100 100 100] map[100:[server-100-0 server-100-1 server-100-2] 101:[server-101-0 server-101-1 server-101-2]]}}, op.NewConfig.Num=2, kv.currentConfig.Num=0
+004183 SKVKVCOF S1 KVServer start update shard status, config={2 [101 101 101 101 101 100 100 100 100 100] map[100:[server-100-0 server-100-1 server-100-2] 101:[server-101-0 server-101-1 server-101-2]]}, last config={0 [0 0 0 0 0 0 0 0 0 0] map[]}
+004185 SKVKVCOF S1 KVServer get new Shard! shardid=0
+004186 SKVKVCOF S1 KVServer get new Shard! shardid=1
+004186 SKVKVCOF S1 KVServer get new Shard! shardid=2
+004186 SKVKVCOF S1 KVServer get new Shard! shardid=3
+004187 SKVKVCOF S1 KVServer get new Shard! shardid=4
+004179 SKVDSNAP S0 KVServer receive configOp! IDX:1, config={2 [101 101 101 101 101 100 100 100 100 100] map[100:[server-100-0 server-100-1 server-100-2] 101:[server-101-0 server-101-1 server-101-2]]}
+004187 CRTSCQUE CK1971501632050421639 Start Query, num=-1
+004187 SKVKVCOF S0 KVServer start apply configOp={{2 [101 101 101 101 101 100 100 100 100 100] map[100:[server-100-0 server-100-1 server-100-2] 101:[server-101-0 server-101-1 server-101-2]]}}, op.NewConfig.Num=2, kv.currentConfig.Num=0
+004189 SKVKVCOF S0 KVServer start update shard status, config={2 [101 101 101 101 101 100 100 100 100 100] map[100:[server-100-0 server-100-1 server-100-2] 101:[server-101-0 server-101-1 server-101-2]]}, last config={0 [0 0 0 0 0 0 0 0 0 0] map[]}
+004190 SKVKVCOF S0 KVServer get new Shard! shardid=0
+004191 SKVKVCOF S0 KVServer get new Shard! shardid=1
+004191 CRTSCQUE SC1 Start query, num=-1
+004191 SKVKVCOF S0 KVServer get new Shard! shardid=2
+004191 CRTDLOGS SC1 Query return, wrongleader=false, err=
+004191 SKVKVCOF S0 KVServer get new Shard! shardid=3
+004192 SKVKVCOF S0 KVServer get new Shard! shardid=4
+004195 CRTSCQUE SC0 Start query, num=-1
+004196 CRTDLOGS SC0 Query return, wrongleader=false, err=
+004202 SKVDSNAP S1 KVServer receive configOp! IDX:1, config={2 [101 101 101 101 101 100 100 100 100 100] map[100:[server-100-0 server-100-1 server-100-2] 101:[server-101-0 server-101-1 server-101-2]]}
+004204 SKVKVCOF S1 KVServer start apply configOp={{2 [101 101 101 101 101 100 100 100 100 100] map[100:[server-100-0 server-100-1 server-100-2] 101:[server-101-0 server-101-1 server-101-2]]}}, op.NewConfig.Num=2, kv.currentConfig.Num=0
+004204 SKVDSNAP S0 KVServer receive configOp! IDX:1, config={2 [101 101 101 101 101 100 100 100 100 100] map[100:[server-100-0 server-100-1 server-100-2] 101:[server-101-0 server-101-1 server-101-2]]}
+004206 SKVKVCOF S1 KVServer start update shard status, config={2 [101 101 101 101 101 100 100 100 100 100] map[100:[server-100-0 server-100-1 server-100-2] 101:[server-101-0 server-101-1 server-101-2]]}, last config={0 [0 0 0 0 0 0 0 0 0 0] map[]}
+004207 CRTSCQUE SC2 Start query, num=-1
+004206 SKVKVCOF S0 KVServer start apply configOp={{2 [101 101 101 101 101 100 100 100 100 100] map[100:[server-100-0 server-100-1 server-100-2] 101:[server-101-0 server-101-1 server-101-2]]}}, op.NewConfig.Num=2, kv.currentConfig.Num=0
+004220 CRTSCQUE SC1 Start query, num=-1
+004221 CRTDLOGS SC1 Query return, wrongleader=false, err=
+004211 SKVKVCOF S0 KVServer start update shard status, config={2 [101 101 101 101 101 100 100 100 100 100] map[100:[server-100-0 server-100-1 server-100-2] 101:[server-101-0 server-101-1 server-101-2]]}, last config={0 [0 0 0 0 0 0 0 0 0 0] map[]}
+004238 CRTSCQUE CK1494271722060346988 Start Query, num=-1
+004244 CRTSCQUE SC0 Start query, num=-1
+004245 CRTDLOGS SC0 Query return, wrongleader=false, err=
+004260 CRTSCQUE SC2 Start query, num=-1
+004262 CRTSCQUE SC1 Start query, num=-1
+004262 CRTDLOGS SC1 Query return, wrongleader=false, err=
+004278 SKVDSNAP S1 KVServer receive configOp! IDX:1, config={2 [101 101 101 101 101 100 100 100 100 100] map[100:[server-100-0 server-100-1 server-100-2] 101:[server-101-0 server-101-1 server-101-2]]}
+004280 SKVKVCOF S1 KVServer start apply configOp={{2 [101 101 101 101 101 100 100 100 100 100] map[100:[server-100-0 server-100-1 server-100-2] 101:[server-101-0 server-101-1 server-101-2]]}}, op.NewConfig.Num=2, kv.currentConfig.Num=0
+004281 SKVKVCOF S1 KVServer start update shard status, config={2 [101 101 101 101 101 100 100 100 100 100] map[100:[server-100-0 server-100-1 server-100-2] 101:[server-101-0 server-101-1 server-101-2]]}, last config={0 [0 0 0 0 0 0 0 0 0 0] map[]}
+004281 SKVDSNAP S2 KVServer receive configOp! IDX:1, config={2 [101 101 101 101 101 100 100 100 100 100] map[100:[server-100-0 server-100-1 server-100-2] 101:[server-101-0 server-101-1 server-101-2]]}
+004283 SKVKVCOF S2 KVServer start apply configOp={{2 [101 101 101 101 101 100 100 100 100 100] map[100:[server-100-0 server-100-1 server-100-2] 101:[server-101-0 server-101-1 server-101-2]]}}, op.NewConfig.Num=2, kv.currentConfig.Num=0
+004285 SKVKVCOF S2 KVServer start update shard status, config={2 [101 101 101 101 101 100 100 100 100 100] map[100:[server-100-0 server-100-1 server-100-2] 101:[server-101-0 server-101-1 server-101-2]]}, last config={0 [0 0 0 0 0 0 0 0 0 0] map[]}
+004286 SKVKVCOF S2 KVServer get new Shard! shardid=5
+004287 SKVKVCOF S2 KVServer get new Shard! shardid=6
+004287 SKVKVCOF S2 KVServer get new Shard! shardid=7
+004288 SKVKVCOF S2 KVServer get new Shard! shardid=8
+004288 SKVKVCOF S2 KVServer get new Shard! shardid=9
+004290 CRTSCQUE SC2 Start query, num=-1
+004283 SKVKVCOF S1 KVServer get new Shard! shardid=5
+004293 SKVKVCOF S1 KVServer get new Shard! shardid=6
+004294 SKVKVCOF S1 KVServer get new Shard! shardid=7
+004294 SKVKVCOF S1 KVServer get new Shard! shardid=8
+004294 SKVKVCOF S1 KVServer get new Shard! shardid=9
+004300 CRTDLOGS SC2 Query return, wrongleader=false, err=OK
+004306 CRTDLOGS SC2 Query return, wrongleader=false, err=OK
+004331 CRTDLOGS SC2 Query return, wrongleader=false, err=OK
+panic: test timed out after 10m0s
+
+goroutine 142568 [running]:
+testing.(*M).startAlarm.func1()
+	/usr/local/go/src/testing/testing.go:2036 +0xbb
+created by time.goFunc
+	/usr/local/go/src/time/sleep.go:176 +0x48
+
+goroutine 1 [chan receive, 9 minutes]:
+testing.(*T).Run(0xc00018c9c0, {0x767878, 0x10}, 0x77cee0)
+	/usr/local/go/src/testing/testing.go:1494 +0x789
+testing.runTests.func1(0x0?)
+	/usr/local/go/src/testing/testing.go:1846 +0x9a
+testing.tRunner(0xc00018c9c0, 0xc00018bba0)
+	/usr/local/go/src/testing/testing.go:1446 +0x217
+testing.runTests(0xc000000140?, {0x93ee80, 0xd, 0xd}, {0x40?, 0x7f944c79d228?, 0x9437a0?})
+	/usr/local/go/src/testing/testing.go:1844 +0x7ed
+testing.(*M).Run(0xc000000140)
+	/usr/local/go/src/testing/testing.go:1726 +0xa85
+main.main()
+	_testmain.go:71 +0x2ea
+
+goroutine 6 [chan receive, 9 minutes]:
+6.824/labrpc.(*ClientEnd).Call(0xc0003d72a0, {0x767cae, 0x11}, {0x70f8e0, 0xc000393800}, {0x70f920, 0xc0003f6020})
+	/home/csq/workproject/6.824/src/labrpc/labrpc.go:112 +0x32f
+6.824/shardkv.(*Clerk).PutAppend(0xc000197900, {0x76e57a, 0x1}, {0xc00029d2c0, 0x14}, {0x764688, 0x3})
+	/home/csq/workproject/6.824/src/shardkv/client.go:122 +0x7e9
+6.824/shardkv.(*Clerk).Put(...)
+	/home/csq/workproject/6.824/src/shardkv/client.go:140
+6.824/shardkv.TestStaticShards(0xc00018cb60)
+	/home/csq/workproject/6.824/src/shardkv/test_test.go:45 +0x238
+testing.tRunner(0xc00018cb60, 0x77cee0)
+	/usr/local/go/src/testing/testing.go:1446 +0x217
+created by testing.(*T).Run
+	/usr/local/go/src/testing/testing.go:1493 +0x75e
+
+goroutine 7 [select]:
+6.824/labrpc.MakeNetwork.func1()
+	/home/csq/workproject/6.824/src/labrpc/labrpc.go:153 +0x11a
+created by 6.824/labrpc.MakeNetwork
+	/home/csq/workproject/6.824/src/labrpc/labrpc.go:151 +0x2e6
+
+goroutine 8 [sleep]:
+time.Sleep(0x4c4b40)
+	/usr/local/go/src/runtime/time.go:195 +0x135
+6.824/raft.(*Raft).voteTicker(0xc0000023c0)
+	/home/csq/workproject/6.824/src/raft/raft_requestvote.go:29 +0x58
+created by 6.824/raft.Make
+	/home/csq/workproject/6.824/src/raft/raft.go:223 +0x914
+
+goroutine 9 [sleep]:
+time.Sleep(0x1e8480)
+	/usr/local/go/src/runtime/time.go:195 +0x135
+6.824/raft.(*Raft).appendTicker(0xc0000023c0)
+	/home/csq/workproject/6.824/src/raft/raft_appendentries.go:31 +0x73
+created by 6.824/raft.Make
+	/home/csq/workproject/6.824/src/raft/raft.go:224 +0x992
+
+goroutine 10 [sync.Cond.Wait, 9 minutes]:
+sync.runtime_notifyListWait(0xc000017d50, 0x8)
+	/usr/local/go/src/runtime/sema.go:517 +0x14c
+sync.(*Cond).Wait(0xc000017d40)
+	/usr/local/go/src/sync/cond.go:70 +0xa5
+6.824/raft.(*Raft).ApplyCmd(0xc0000023c0)
+	/home/csq/workproject/6.824/src/raft/raft_apply.go:30 +0x55b
+created by 6.824/raft.Make
+	/home/csq/workproject/6.824/src/raft/raft.go:227 +0x9fb
+
+goroutine 11 [chan receive, 9 minutes]:
+6.824/shardctrler.(*ShardCtrler).apply(0xc0001a8000)
+	/home/csq/workproject/6.824/src/shardctrler/server.go:169 +0xaa
+created by 6.824/shardctrler.StartServer
+	/home/csq/workproject/6.824/src/shardctrler/server.go:365 +0x4c5
+
+goroutine 12 [sleep]:
+time.Sleep(0x4c4b40)
+	/usr/local/go/src/runtime/time.go:195 +0x135
+6.824/raft.(*Raft).voteTicker(0xc000002500)
+	/home/csq/workproject/6.824/src/raft/raft_requestvote.go:29 +0x58
+created by 6.824/raft.Make
+	/home/csq/workproject/6.824/src/raft/raft.go:223 +0x914
+
+goroutine 13 [sleep]:
+time.Sleep(0x1e8480)
+	/usr/local/go/src/runtime/time.go:195 +0x135
+6.824/raft.(*Raft).appendTicker(0xc000002500)
+	/home/csq/workproject/6.824/src/raft/raft_appendentries.go:31 +0x73
+created by 6.824/raft.Make
+	/home/csq/workproject/6.824/src/raft/raft.go:224 +0x992
+
+goroutine 14 [sync.Cond.Wait, 9 minutes]:
+sync.runtime_notifyListWait(0xc000017e90, 0x8)
+	/usr/local/go/src/runtime/sema.go:517 +0x14c
+sync.(*Cond).Wait(0xc000017e80)
+	/usr/local/go/src/sync/cond.go:70 +0xa5
+6.824/raft.(*Raft).ApplyCmd(0xc000002500)
+	/home/csq/workproject/6.824/src/raft/raft_apply.go:30 +0x55b
+created by 6.824/raft.Make
+	/home/csq/workproject/6.824/src/raft/raft.go:227 +0x9fb
+
+goroutine 15 [chan receive, 9 minutes]:
+6.824/shardctrler.(*ShardCtrler).apply(0xc0001a8100)
+	/home/csq/workproject/6.824/src/shardctrler/server.go:169 +0xaa
+created by 6.824/shardctrler.StartServer
+	/home/csq/workproject/6.824/src/shardctrler/server.go:365 +0x4c5
+
+goroutine 16 [sleep]:
+time.Sleep(0x4c4b40)
+	/usr/local/go/src/runtime/time.go:195 +0x135
+6.824/raft.(*Raft).voteTicker(0xc000002780)
+	/home/csq/workproject/6.824/src/raft/raft_requestvote.go:29 +0x58
+created by 6.824/raft.Make
+	/home/csq/workproject/6.824/src/raft/raft.go:223 +0x914
+
+goroutine 18 [sleep]:
+time.Sleep(0x1e8480)
+	/usr/local/go/src/runtime/time.go:195 +0x135
+6.824/raft.(*Raft).appendTicker(0xc000002780)
+	/home/csq/workproject/6.824/src/raft/raft_appendentries.go:31 +0x73
+created by 6.824/raft.Make
+	/home/csq/workproject/6.824/src/raft/raft.go:224 +0x992
+
+goroutine 19 [sync.Cond.Wait, 9 minutes]:
+sync.runtime_notifyListWait(0xc000017fd0, 0xa)
+	/usr/local/go/src/runtime/sema.go:517 +0x14c
+sync.(*Cond).Wait(0xc000017fc0)
+	/usr/local/go/src/sync/cond.go:70 +0xa5
+6.824/raft.(*Raft).ApplyCmd(0xc000002780)
+	/home/csq/workproject/6.824/src/raft/raft_apply.go:30 +0x55b
+created by 6.824/raft.Make
+	/home/csq/workproject/6.824/src/raft/raft.go:227 +0x9fb
+
+goroutine 20 [chan receive, 9 minutes]:
+6.824/shardctrler.(*ShardCtrler).apply(0xc0001a8200)
+	/home/csq/workproject/6.824/src/shardctrler/server.go:169 +0xaa
+created by 6.824/shardctrler.StartServer
+	/home/csq/workproject/6.824/src/shardctrler/server.go:365 +0x4c5
+
+goroutine 21 [sleep]:
+time.Sleep(0x4c4b40)
+	/usr/local/go/src/runtime/time.go:195 +0x135
+6.824/raft.(*Raft).voteTicker(0xc000002a00)
+	/home/csq/workproject/6.824/src/raft/raft_requestvote.go:29 +0x58
+created by 6.824/raft.Make
+	/home/csq/workproject/6.824/src/raft/raft.go:223 +0x914
+
+goroutine 22 [sleep]:
+time.Sleep(0x1e8480)
+	/usr/local/go/src/runtime/time.go:195 +0x135
+6.824/raft.(*Raft).appendTicker(0xc000002a00)
+	/home/csq/workproject/6.824/src/raft/raft_appendentries.go:31 +0x73
+created by 6.824/raft.Make
+	/home/csq/workproject/6.824/src/raft/raft.go:224 +0x992
+
+goroutine 23 [sync.Cond.Wait, 9 minutes]:
+sync.runtime_notifyListWait(0xc0001be210, 0x1)
+	/usr/local/go/src/runtime/sema.go:517 +0x14c
+sync.(*Cond).Wait(0xc0001be200)
+	/usr/local/go/src/sync/cond.go:70 +0xa5
+6.824/raft.(*Raft).ApplyCmd(0xc000002a00)
+	/home/csq/workproject/6.824/src/raft/raft_apply.go:30 +0x55b
+created by 6.824/raft.Make
+	/home/csq/workproject/6.824/src/raft/raft.go:227 +0x9fb
+
+goroutine 24 [semacquire, 9 minutes]:
+sync.runtime_SemacquireMutex(0xc00012c400?, 0x2?, 0x3?)
+	/usr/local/go/src/runtime/sema.go:77 +0x25
+sync.(*Mutex).lockSlow(0xc0000fe2c0)
+	/usr/local/go/src/sync/mutex.go:171 +0x225
+sync.(*Mutex).Lock(0xc0000fe2c0)
+	/usr/local/go/src/sync/mutex.go:90 +0x65
+6.824/shardkv.(*ShardKV).acquireConfig(0xc0000fe2c0)
+	/home/csq/workproject/6.824/src/shardkv/server_config_op.go:19 +0x105
+created by 6.824/shardkv.StartServer
+	/home/csq/workproject/6.824/src/shardkv/server.go:115 +0x6bb
+
+goroutine 25 [semacquire, 9 minutes]:
+sync.runtime_SemacquireMutex(0x62?, 0xc8?, 0x4?)
+	/usr/local/go/src/runtime/sema.go:77 +0x25
+sync.(*Mutex).lockSlow(0xc0000fe2c0)
+	/usr/local/go/src/sync/mutex.go:171 +0x225
+sync.(*Mutex).Lock(0xc0000fe2c0)
+	/usr/local/go/src/sync/mutex.go:90 +0x65
+6.824/shardkv.(*ShardKV).applyConfig(0xc0000fe2c0, {{0x2, {0x65, 0x65, 0x65, 0x65, 0x65, 0x64, 0x64, 0x64, ...}, ...}})
+	/home/csq/workproject/6.824/src/shardkv/server_apply.go:85 +0x1ab
+6.824/shardkv.(*ShardKV).apply(0xc0000fe2c0)
+	/home/csq/workproject/6.824/src/shardkv/server_apply.go:111 +0x6c5
+created by 6.824/shardkv.StartServer
+	/home/csq/workproject/6.824/src/shardkv/server.go:116 +0x725
+
+goroutine 26 [sleep]:
+time.Sleep(0x4c4b40)
+	/usr/local/go/src/runtime/time.go:195 +0x135
+6.824/raft.(*Raft).voteTicker(0xc000002b40)
+	/home/csq/workproject/6.824/src/raft/raft_requestvote.go:29 +0x58
+created by 6.824/raft.Make
+	/home/csq/workproject/6.824/src/raft/raft.go:223 +0x914
+
+goroutine 27 [sleep]:
+time.Sleep(0x1e8480)
+	/usr/local/go/src/runtime/time.go:195 +0x135
+6.824/raft.(*Raft).appendTicker(0xc000002b40)
+	/home/csq/workproject/6.824/src/raft/raft_appendentries.go:31 +0x73
+created by 6.824/raft.Make
+	/home/csq/workproject/6.824/src/raft/raft.go:224 +0x992
+
+goroutine 28 [sync.Cond.Wait, 9 minutes]:
+sync.runtime_notifyListWait(0xc0001be390, 0x1)
+	/usr/local/go/src/runtime/sema.go:517 +0x14c
+sync.(*Cond).Wait(0xc0001be380)
+	/usr/local/go/src/sync/cond.go:70 +0xa5
+6.824/raft.(*Raft).ApplyCmd(0xc000002b40)
+	/home/csq/workproject/6.824/src/raft/raft_apply.go:30 +0x55b
+created by 6.824/raft.Make
+	/home/csq/workproject/6.824/src/raft/raft.go:227 +0x9fb
+
+goroutine 29 [sleep]:
+time.Sleep(0x5f5e100)
+	/usr/local/go/src/runtime/time.go:195 +0x135
+6.824/shardkv.(*ShardKV).acquireConfig(0xc0000fe420)
+	/home/csq/workproject/6.824/src/shardkv/server_config_op.go:14 +0x48
+created by 6.824/shardkv.StartServer
+	/home/csq/workproject/6.824/src/shardkv/server.go:115 +0x6bb
+
+goroutine 30 [chan receive, 9 minutes]:
+6.824/shardkv.(*ShardKV).apply(0xc0000fe420)
+	/home/csq/workproject/6.824/src/shardkv/server_apply.go:97 +0xaa
+created by 6.824/shardkv.StartServer
+	/home/csq/workproject/6.824/src/shardkv/server.go:116 +0x725
+
+goroutine 31 [sleep]:
+time.Sleep(0x4c4b40)
+	/usr/local/go/src/runtime/time.go:195 +0x135
+6.824/raft.(*Raft).voteTicker(0xc000002c80)
+	/home/csq/workproject/6.824/src/raft/raft_requestvote.go:29 +0x58
+created by 6.824/raft.Make
+	/home/csq/workproject/6.824/src/raft/raft.go:223 +0x914
+
+goroutine 32 [sleep]:
+time.Sleep(0x1e8480)
+	/usr/local/go/src/runtime/time.go:195 +0x135
+6.824/raft.(*Raft).appendTicker(0xc000002c80)
+	/home/csq/workproject/6.824/src/raft/raft_appendentries.go:31 +0x73
+created by 6.824/raft.Make
+	/home/csq/workproject/6.824/src/raft/raft.go:224 +0x992
+
+goroutine 33 [sync.Cond.Wait, 9 minutes]:
+sync.runtime_notifyListWait(0xc0001be510, 0x1)
+	/usr/local/go/src/runtime/sema.go:517 +0x14c
+sync.(*Cond).Wait(0xc0001be500)
+	/usr/local/go/src/sync/cond.go:70 +0xa5
+6.824/raft.(*Raft).ApplyCmd(0xc000002c80)
+	/home/csq/workproject/6.824/src/raft/raft_apply.go:30 +0x55b
+created by 6.824/raft.Make
+	/home/csq/workproject/6.824/src/raft/raft.go:227 +0x9fb
+
+goroutine 34 [sleep]:
+time.Sleep(0x5f5e100)
+	/usr/local/go/src/runtime/time.go:195 +0x135
+6.824/shardkv.(*ShardKV).acquireConfig(0xc0000fe580)
+	/home/csq/workproject/6.824/src/shardkv/server_config_op.go:14 +0x48
+created by 6.824/shardkv.StartServer
+	/home/csq/workproject/6.824/src/shardkv/server.go:115 +0x6bb
+
+goroutine 35 [chan receive, 9 minutes]:
+6.824/shardkv.(*ShardKV).apply(0xc0000fe580)
+	/home/csq/workproject/6.824/src/shardkv/server_apply.go:97 +0xaa
+created by 6.824/shardkv.StartServer
+	/home/csq/workproject/6.824/src/shardkv/server.go:116 +0x725
+
+goroutine 36 [sleep]:
+time.Sleep(0x4c4b40)
+	/usr/local/go/src/runtime/time.go:195 +0x135
+6.824/raft.(*Raft).voteTicker(0xc000002dc0)
+	/home/csq/workproject/6.824/src/raft/raft_requestvote.go:29 +0x58
+created by 6.824/raft.Make
+	/home/csq/workproject/6.824/src/raft/raft.go:223 +0x914
+
+goroutine 37 [sleep]:
+time.Sleep(0x1e8480)
+	/usr/local/go/src/runtime/time.go:195 +0x135
+6.824/raft.(*Raft).appendTicker(0xc000002dc0)
+	/home/csq/workproject/6.824/src/raft/raft_appendentries.go:31 +0x73
+created by 6.824/raft.Make
+	/home/csq/workproject/6.824/src/raft/raft.go:224 +0x992
+
+goroutine 38 [sync.Cond.Wait, 9 minutes]:
+sync.runtime_notifyListWait(0xc0001be690, 0x1)
+	/usr/local/go/src/runtime/sema.go:517 +0x14c
+sync.(*Cond).Wait(0xc0001be680)
+	/usr/local/go/src/sync/cond.go:70 +0xa5
+6.824/raft.(*Raft).ApplyCmd(0xc000002dc0)
+	/home/csq/workproject/6.824/src/raft/raft_apply.go:30 +0x55b
+created by 6.824/raft.Make
+	/home/csq/workproject/6.824/src/raft/raft.go:227 +0x9fb
+
+goroutine 39 [sleep]:
+time.Sleep(0x5f5e100)
+	/usr/local/go/src/runtime/time.go:195 +0x135
+6.824/shardkv.(*ShardKV).acquireConfig(0xc0000fe6e0)
+	/home/csq/workproject/6.824/src/shardkv/server_config_op.go:14 +0x48
+created by 6.824/shardkv.StartServer
+	/home/csq/workproject/6.824/src/shardkv/server.go:115 +0x6bb
+
+goroutine 40 [chan receive, 9 minutes]:
+6.824/shardkv.(*ShardKV).apply(0xc0000fe6e0)
+	/home/csq/workproject/6.824/src/shardkv/server_apply.go:97 +0xaa
+created by 6.824/shardkv.StartServer
+	/home/csq/workproject/6.824/src/shardkv/server.go:116 +0x725
+
+goroutine 41 [sleep]:
+time.Sleep(0x4c4b40)
+	/usr/local/go/src/runtime/time.go:195 +0x135
+6.824/raft.(*Raft).voteTicker(0xc000002f00)
+	/home/csq/workproject/6.824/src/raft/raft_requestvote.go:29 +0x58
+created by 6.824/raft.Make
+	/home/csq/workproject/6.824/src/raft/raft.go:223 +0x914
+
+goroutine 42 [sleep]:
+time.Sleep(0x1e8480)
+	/usr/local/go/src/runtime/time.go:195 +0x135
+6.824/raft.(*Raft).appendTicker(0xc000002f00)
+	/home/csq/workproject/6.824/src/raft/raft_appendentries.go:31 +0x73
+created by 6.824/raft.Make
+	/home/csq/workproject/6.824/src/raft/raft.go:224 +0x992
+
+goroutine 43 [sync.Cond.Wait, 9 minutes]:
+sync.runtime_notifyListWait(0xc0001be810, 0x1)
+	/usr/local/go/src/runtime/sema.go:517 +0x14c
+sync.(*Cond).Wait(0xc0001be800)
+	/usr/local/go/src/sync/cond.go:70 +0xa5
+6.824/raft.(*Raft).ApplyCmd(0xc000002f00)
+	/home/csq/workproject/6.824/src/raft/raft_apply.go:30 +0x55b
+created by 6.824/raft.Make
+	/home/csq/workproject/6.824/src/raft/raft.go:227 +0x9fb
+
+goroutine 44 [sleep]:
+time.Sleep(0x5f5e100)
+	/usr/local/go/src/runtime/time.go:195 +0x135
+6.824/shardkv.(*ShardKV).acquireConfig(0xc0000fe840)
+	/home/csq/workproject/6.824/src/shardkv/server_config_op.go:14 +0x48
+created by 6.824/shardkv.StartServer
+	/home/csq/workproject/6.824/src/shardkv/server.go:115 +0x6bb
+
+goroutine 45 [chan receive, 9 minutes]:
+6.824/shardkv.(*ShardKV).apply(0xc0000fe840)
+	/home/csq/workproject/6.824/src/shardkv/server_apply.go:97 +0xaa
+created by 6.824/shardkv.StartServer
+	/home/csq/workproject/6.824/src/shardkv/server.go:116 +0x725
+
+goroutine 46 [sleep]:
+time.Sleep(0x4c4b40)
+	/usr/local/go/src/runtime/time.go:195 +0x135
+6.824/raft.(*Raft).voteTicker(0xc000003040)
+	/home/csq/workproject/6.824/src/raft/raft_requestvote.go:29 +0x58
+created by 6.824/raft.Make
+	/home/csq/workproject/6.824/src/raft/raft.go:223 +0x914
+
+goroutine 47 [sleep]:
+time.Sleep(0x1e8480)
+	/usr/local/go/src/runtime/time.go:195 +0x135
+6.824/raft.(*Raft).appendTicker(0xc000003040)
+	/home/csq/workproject/6.824/src/raft/raft_appendentries.go:31 +0x73
+created by 6.824/raft.Make
+	/home/csq/workproject/6.824/src/raft/raft.go:224 +0x992
+
+goroutine 48 [sync.Cond.Wait, 9 minutes]:
+sync.runtime_notifyListWait(0xc0001be990, 0x1)
+	/usr/local/go/src/runtime/sema.go:517 +0x14c
+sync.(*Cond).Wait(0xc0001be980)
+	/usr/local/go/src/sync/cond.go:70 +0xa5
+6.824/raft.(*Raft).ApplyCmd(0xc000003040)
+	/home/csq/workproject/6.824/src/raft/raft_apply.go:30 +0x55b
+created by 6.824/raft.Make
+	/home/csq/workproject/6.824/src/raft/raft.go:227 +0x9fb
+
+goroutine 49 [semacquire, 9 minutes]:
+sync.runtime_SemacquireMutex(0xc00028dd80?, 0x2?, 0x3?)
+	/usr/local/go/src/runtime/sema.go:77 +0x25
+sync.(*Mutex).lockSlow(0xc0000fe9a0)
+	/usr/local/go/src/sync/mutex.go:171 +0x225
+sync.(*Mutex).Lock(0xc0000fe9a0)
+	/usr/local/go/src/sync/mutex.go:90 +0x65
+6.824/shardkv.(*ShardKV).acquireConfig(0xc0000fe9a0)
+	/home/csq/workproject/6.824/src/shardkv/server_config_op.go:19 +0x105
+created by 6.824/shardkv.StartServer
+	/home/csq/workproject/6.824/src/shardkv/server.go:115 +0x6bb
+
+goroutine 50 [semacquire, 9 minutes]:
+sync.runtime_SemacquireMutex(0x62?, 0xc8?, 0x4?)
+	/usr/local/go/src/runtime/sema.go:77 +0x25
+sync.(*Mutex).lockSlow(0xc0000fe9a0)
+	/usr/local/go/src/sync/mutex.go:171 +0x225
+sync.(*Mutex).Lock(0xc0000fe9a0)
+	/usr/local/go/src/sync/mutex.go:90 +0x65
+6.824/shardkv.(*ShardKV).applyConfig(0xc0000fe9a0, {{0x2, {0x65, 0x65, 0x65, 0x65, 0x65, 0x64, 0x64, 0x64, ...}, ...}})
+	/home/csq/workproject/6.824/src/shardkv/server_apply.go:85 +0x1ab
+6.824/shardkv.(*ShardKV).apply(0xc0000fe9a0)
+	/home/csq/workproject/6.824/src/shardkv/server_apply.go:111 +0x6c5
+created by 6.824/shardkv.StartServer
+	/home/csq/workproject/6.824/src/shardkv/server.go:116 +0x725
+
+goroutine 51 [sleep]:
+time.Sleep(0x4c4b40)
+	/usr/local/go/src/runtime/time.go:195 +0x135
+6.824/raft.(*Raft).voteTicker(0xc000003180)
+	/home/csq/workproject/6.824/src/raft/raft_requestvote.go:29 +0x58
+created by 6.824/raft.Make
+	/home/csq/workproject/6.824/src/raft/raft.go:223 +0x914
+
+goroutine 52 [sleep]:
+time.Sleep(0x1e8480)
+	/usr/local/go/src/runtime/time.go:195 +0x135
+6.824/raft.(*Raft).appendTicker(0xc000003180)
+	/home/csq/workproject/6.824/src/raft/raft_appendentries.go:31 +0x73
+created by 6.824/raft.Make
+	/home/csq/workproject/6.824/src/raft/raft.go:224 +0x992
+
+goroutine 53 [sync.Cond.Wait, 9 minutes]:
+sync.runtime_notifyListWait(0xc0001beb10, 0x1)
+	/usr/local/go/src/runtime/sema.go:517 +0x14c
+sync.(*Cond).Wait(0xc0001beb00)
+	/usr/local/go/src/sync/cond.go:70 +0xa5
+6.824/raft.(*Raft).ApplyCmd(0xc000003180)
+	/home/csq/workproject/6.824/src/raft/raft_apply.go:30 +0x55b
+created by 6.824/raft.Make
+	/home/csq/workproject/6.824/src/raft/raft.go:227 +0x9fb
+
+goroutine 54 [sleep]:
+time.Sleep(0x5f5e100)
+	/usr/local/go/src/runtime/time.go:195 +0x135
+6.824/shardkv.(*ShardKV).acquireConfig(0xc0000feb00)
+	/home/csq/workproject/6.824/src/shardkv/server_config_op.go:14 +0x48
+created by 6.824/shardkv.StartServer
+	/home/csq/workproject/6.824/src/shardkv/server.go:115 +0x6bb
+
+goroutine 55 [chan receive, 9 minutes]:
+6.824/shardkv.(*ShardKV).apply(0xc0000feb00)
+	/home/csq/workproject/6.824/src/shardkv/server_apply.go:97 +0xaa
+created by 6.824/shardkv.StartServer
+	/home/csq/workproject/6.824/src/shardkv/server.go:116 +0x725
+
+goroutine 56 [sleep]:
+time.Sleep(0x4c4b40)
+	/usr/local/go/src/runtime/time.go:195 +0x135
+6.824/raft.(*Raft).voteTicker(0xc0000032c0)
+	/home/csq/workproject/6.824/src/raft/raft_requestvote.go:29 +0x58
+created by 6.824/raft.Make
+	/home/csq/workproject/6.824/src/raft/raft.go:223 +0x914
+
+goroutine 57 [sleep]:
+time.Sleep(0x1e8480)
+	/usr/local/go/src/runtime/time.go:195 +0x135
+6.824/raft.(*Raft).appendTicker(0xc0000032c0)
+	/home/csq/workproject/6.824/src/raft/raft_appendentries.go:31 +0x73
+created by 6.824/raft.Make
+	/home/csq/workproject/6.824/src/raft/raft.go:224 +0x992
+
+goroutine 58 [sync.Cond.Wait, 9 minutes]:
+sync.runtime_notifyListWait(0xc0001bec90, 0x1)
+	/usr/local/go/src/runtime/sema.go:517 +0x14c
+sync.(*Cond).Wait(0xc0001bec80)
+	/usr/local/go/src/sync/cond.go:70 +0xa5
+6.824/raft.(*Raft).ApplyCmd(0xc0000032c0)
+	/home/csq/workproject/6.824/src/raft/raft_apply.go:30 +0x55b
+created by 6.824/raft.Make
+	/home/csq/workproject/6.824/src/raft/raft.go:227 +0x9fb
+
+goroutine 59 [sleep]:
+time.Sleep(0x5f5e100)
+	/usr/local/go/src/runtime/time.go:195 +0x135
+6.824/shardkv.(*ShardKV).acquireConfig(0xc0000fec60)
+	/home/csq/workproject/6.824/src/shardkv/server_config_op.go:14 +0x48
+created by 6.824/shardkv.StartServer
+	/home/csq/workproject/6.824/src/shardkv/server.go:115 +0x6bb
+
+goroutine 60 [chan receive, 9 minutes]:
+6.824/shardkv.(*ShardKV).apply(0xc0000fec60)
+	/home/csq/workproject/6.824/src/shardkv/server_apply.go:97 +0xaa
+created by 6.824/shardkv.StartServer
+	/home/csq/workproject/6.824/src/shardkv/server.go:116 +0x725
+
+goroutine 61 [sleep]:
+time.Sleep(0x4c4b40)
+	/usr/local/go/src/runtime/time.go:195 +0x135
+6.824/raft.(*Raft).voteTicker(0xc000003400)
+	/home/csq/workproject/6.824/src/raft/raft_requestvote.go:29 +0x58
+created by 6.824/raft.Make
+	/home/csq/workproject/6.824/src/raft/raft.go:223 +0x914
+
+goroutine 62 [sleep]:
+time.Sleep(0x1e8480)
+	/usr/local/go/src/runtime/time.go:195 +0x135
+6.824/raft.(*Raft).appendTicker(0xc000003400)
+	/home/csq/workproject/6.824/src/raft/raft_appendentries.go:31 +0x73
+created by 6.824/raft.Make
+	/home/csq/workproject/6.824/src/raft/raft.go:224 +0x992
+
+goroutine 63 [sync.Cond.Wait, 9 minutes]:
+sync.runtime_notifyListWait(0xc0001bee10, 0x1)
+	/usr/local/go/src/runtime/sema.go:517 +0x14c
+sync.(*Cond).Wait(0xc0001bee00)
+	/usr/local/go/src/sync/cond.go:70 +0xa5
+6.824/raft.(*Raft).ApplyCmd(0xc000003400)
+	/home/csq/workproject/6.824/src/raft/raft_apply.go:30 +0x55b
+created by 6.824/raft.Make
+	/home/csq/workproject/6.824/src/raft/raft.go:227 +0x9fb
+
+goroutine 64 [semacquire, 9 minutes]:
+sync.runtime_SemacquireMutex(0xc000222080?, 0x2?, 0x3?)
+	/usr/local/go/src/runtime/sema.go:77 +0x25
+sync.(*Mutex).lockSlow(0xc0000fedc0)
+	/usr/local/go/src/sync/mutex.go:171 +0x225
+sync.(*Mutex).Lock(0xc0000fedc0)
+	/usr/local/go/src/sync/mutex.go:90 +0x65
+6.824/shardkv.(*ShardKV).acquireConfig(0xc0000fedc0)
+	/home/csq/workproject/6.824/src/shardkv/server_config_op.go:19 +0x105
+created by 6.824/shardkv.StartServer
+	/home/csq/workproject/6.824/src/shardkv/server.go:115 +0x6bb
+
+goroutine 65 [semacquire, 9 minutes]:
+sync.runtime_SemacquireMutex(0x62?, 0xc8?, 0x4?)
+	/usr/local/go/src/runtime/sema.go:77 +0x25
+sync.(*Mutex).lockSlow(0xc0000fedc0)
+	/usr/local/go/src/sync/mutex.go:171 +0x225
+sync.(*Mutex).Lock(0xc0000fedc0)
+	/usr/local/go/src/sync/mutex.go:90 +0x65
+6.824/shardkv.(*ShardKV).applyConfig(0xc0000fedc0, {{0x2, {0x65, 0x65, 0x65, 0x65, 0x65, 0x64, 0x64, 0x64, ...}, ...}})
+	/home/csq/workproject/6.824/src/shardkv/server_apply.go:85 +0x1ab
+6.824/shardkv.(*ShardKV).apply(0xc0000fedc0)
+	/home/csq/workproject/6.824/src/shardkv/server_apply.go:111 +0x6c5
+created by 6.824/shardkv.StartServer
+	/home/csq/workproject/6.824/src/shardkv/server.go:116 +0x725
+
+goroutine 242 [select]:
+6.824/labrpc.(*Network).processReq(0xc0000c8230, {{0x719760, 0xc0003b7fe0}, {0x767cae, 0x11}, {0x7d3a20, 0x70f8e0}, {0xc0003f80a0, 0x7c, 0xa0}, ...})
+	/home/csq/workproject/6.824/src/labrpc/labrpc.go:251 +0x571
+created by 6.824/labrpc.MakeNetwork.func1
+	/home/csq/workproject/6.824/src/labrpc/labrpc.go:157 +0x4c
+
+goroutine 209 [semacquire, 9 minutes]:
+sync.runtime_SemacquireMutex(0x3?, 0x4?, 0xc00042ed60?)
+	/usr/local/go/src/runtime/sema.go:77 +0x25
+sync.(*Mutex).lockSlow(0xc0000fe2c0)
+	/usr/local/go/src/sync/mutex.go:171 +0x225
+sync.(*Mutex).Lock(0xc0000fe2c0)
+	/usr/local/go/src/sync/mutex.go:90 +0x65
+6.824/shardkv.(*ShardKV).PutAppend(0xc0000fe2c0, 0xc00043a580, 0xc000440150)
+	/home/csq/workproject/6.824/src/shardkv/server_client_op.go:77 +0xf2
+reflect.Value.call({0xc0001c2420?, 0xc000014b48?, 0x52b1e5?}, {0x764777, 0x4}, {0xc000387bf0, 0x3, 0x72e600?})
+	/usr/local/go/src/reflect/value.go:584 +0xfdd
+reflect.Value.Call({0xc0001c2420?, 0xc000014b48?, 0xc00042c710?}, {0xc000387bf0, 0x3, 0x3})
+	/usr/local/go/src/reflect/value.go:368 +0xc8
+6.824/labrpc.(*Service).dispatch(0xc0001be240, {0x767cb6, 0x9}, {{0x719760, 0xc0003b7fe0}, {0x767cae, 0x11}, {0x7d3a20, 0x70f8e0}, {0xc0003f80a0, ...}, ...})
+	/home/csq/workproject/6.824/src/labrpc/labrpc.go:496 +0x47c
+6.824/labrpc.(*Server).dispatch(0xc000012c18, {{0x719760, 0xc0003b7fe0}, {0x767cae, 0x11}, {0x7d3a20, 0x70f8e0}, {0xc0003f80a0, 0x7c, 0xa0}, ...})
+	/home/csq/workproject/6.824/src/labrpc/labrpc.go:420 +0x26b
+6.824/labrpc.(*Network).processReq.func1()
+	/home/csq/workproject/6.824/src/labrpc/labrpc.go:240 +0x9d
+created by 6.824/labrpc.(*Network).processReq
+	/home/csq/workproject/6.824/src/labrpc/labrpc.go:239 +0x2b2
+exit status 2
+FAIL	6.824/shardkv	600.054s

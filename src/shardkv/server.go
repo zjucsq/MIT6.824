@@ -1,17 +1,25 @@
 package shardkv
 
+import (
+	"6.824/labgob"
+	"6.824/labrpc"
+	"6.824/raft"
+	"6.824/shardctrler"
+	"sync"
+)
 
-import "6.824/labrpc"
-import "6.824/raft"
-import "sync"
-import "6.824/labgob"
+const (
+	Serving   = "Serving"
+	Pulling   = "Pulling"
+	BePulling = "BePulling"
+	GCing     = "GCing"
+)
 
+type ShardState string
 
-
-type Op struct {
-	// Your definitions here.
-	// Field names must start with capital letters,
-	// otherwise RPC will break.
+type Shard struct {
+	kvmap map[string]string
+	state ShardState
 }
 
 type ShardKV struct {
@@ -25,30 +33,23 @@ type ShardKV struct {
 	maxraftstate int // snapshot if log grows this big
 
 	// Your definitions here.
+	Shards        map[int]Shard
+	resChs        sync.Map
+	maxSeq        map[int64]int64
+	sc            *shardctrler.Clerk
+	lastConfig    shardctrler.Config
+	currentConfig shardctrler.Config
 }
 
-
-func (kv *ShardKV) Get(args *GetArgs, reply *GetReply) {
-	// Your code here.
-}
-
-func (kv *ShardKV) PutAppend(args *PutAppendArgs, reply *PutAppendReply) {
-	// Your code here.
-}
-
-//
 // the tester calls Kill() when a ShardKV instance won't
 // be needed again. you are not required to do anything
 // in Kill(), but it might be convenient to (for example)
 // turn off debug output from this instance.
-//
 func (kv *ShardKV) Kill() {
 	kv.rf.Kill()
 	// Your code here, if desired.
 }
 
-
-//
 // servers[] contains the ports of the servers in this group.
 //
 // me is the index of the current server in servers[].
@@ -75,11 +76,12 @@ func (kv *ShardKV) Kill() {
 //
 // StartServer() must return quickly, so it should start goroutines
 // for any long-running work.
-//
 func StartServer(servers []*labrpc.ClientEnd, me int, persister *raft.Persister, maxraftstate int, gid int, ctrlers []*labrpc.ClientEnd, make_end func(string) *labrpc.ClientEnd) *ShardKV {
 	// call labgob.Register on structures you want
 	// Go's RPC library to marshall/unmarshall.
 	labgob.Register(Op{})
+	labgob.Register(ClientOp{})
+	labgob.Register(ConfigOp{})
 
 	kv := new(ShardKV)
 	kv.me = me
@@ -96,6 +98,28 @@ func StartServer(servers []*labrpc.ClientEnd, me int, persister *raft.Persister,
 	kv.applyCh = make(chan raft.ApplyMsg)
 	kv.rf = raft.Make(servers, me, persister, kv.applyCh)
 
+	// Your initialization code here.
+	kv.Shards = make(map[int]Shard)
+	kv.maxSeq = make(map[int64]int64)
+	kv.sc = shardctrler.MakeClerk(kv.ctrlers)
+	kv.lastConfig = shardctrler.Config{
+		Num:    0,
+		Groups: make(map[int][]string),
+	}
+	kv.currentConfig = shardctrler.Config{
+		Num:    0,
+		Groups: make(map[int][]string),
+	}
+
+	// apply cmd to kvserver
+	//for i := 0; i < shardctrler.NShards; i++ {
+	//	kv.Shards[i] = Shard{
+	//		kvmap: make(map[string]string),
+	//		state: Serving,
+	//	}
+	//}
+	go kv.acquireConfig()
+	go kv.apply()
 
 	return kv
 }

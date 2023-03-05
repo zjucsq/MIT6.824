@@ -70,3 +70,11 @@ some problem about apply, apply snapshot and logs may conflict.
 
 - Duplicate request
 - Timeout
+
+# lab4
+
+## 4B
+
+### trick about lock
+
+Sometimes we cannot use defer lock, such as in a for loop. In this situation, we can use a function, and use defer in the function.

@@ -28,7 +28,7 @@ type Config struct {
 	Groups map[int][]string // gid -> servers[]
 }
 
-func (src *Config) deepcopyConfig() Config {
+func (src *Config) DeepcopyConfig() Config {
 	dst := Config{
 		Num:    src.Num,
 		Groups: make(map[int][]string),
@@ -53,8 +53,9 @@ const (
 )
 
 const (
-	OK         = "OK"
-	ErrTimeout = "ErrTimeout"
+	OK             = "OK"
+	ErrTimeout     = "ErrTimeout"
+	ErrWrongLeader = "ErrWrongLeader"
 )
 
 const (

@@ -52,8 +52,8 @@ const (
 	ELECTION_EXPIRE_LEFT      = 180
 	ELECTION_EXPIRE_RIGHT     = 360
 	APPEND_SEND_TIME          = 100 // Minimum time to send information at least once
-	//APPEND_EXPIRE_TIME        = 200 // If follower do not receive a heartbeat rpc, it will think the leader is dead.
-	APPEND_TIMER_RESOLUTION = 2
+	APPEND_TIMER_RESOLUTION   = 2
+	//APPEND_EXPIRE_TIME      = 200 // If follower do not receive a heartbeat rpc, it will think the leader is dea
 )
 
 // A Go object implementing a single Raft peer.

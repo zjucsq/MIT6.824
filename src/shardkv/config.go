@@ -1,6 +1,8 @@
 package shardkv
 
-import "6.824/shardctrler"
+import (
+	"6.824/shardctrler"
+)
 import "6.824/labrpc"
 import "testing"
 import "os"
@@ -317,6 +319,7 @@ func (cfg *config) joinm(gis []int) {
 		}
 		m[gid] = servernames
 	}
+	// log.Printf("%v", m)
 	cfg.mck.Join(m)
 }
 
