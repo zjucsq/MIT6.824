@@ -18,8 +18,24 @@ const (
 type ShardState string
 
 type Shard struct {
-	kvmap map[string]string
-	state ShardState
+	Kvmap  map[string]string
+	MaxSeq map[int64]int64
+	State  ShardState
+}
+
+func (src *Shard) DeepcopyShardWithState(state ShardState) Shard {
+	dst := Shard{
+		Kvmap:  make(map[string]string),
+		MaxSeq: make(map[int64]int64),
+		State:  state,
+	}
+	for k, v := range src.Kvmap {
+		dst.Kvmap[k] = v
+	}
+	for k, v := range src.MaxSeq {
+		dst.MaxSeq[k] = v
+	}
+	return dst
 }
 
 type ShardKV struct {
@@ -35,7 +51,6 @@ type ShardKV struct {
 	// Your definitions here.
 	Shards        map[int]Shard
 	resChs        sync.Map
-	maxSeq        map[int64]int64
 	sc            *shardctrler.Clerk
 	lastConfig    shardctrler.Config
 	currentConfig shardctrler.Config
@@ -56,9 +71,9 @@ func (kv *ShardKV) Kill() {
 //
 // the k/v server should store snapshots through the underlying Raft
 // implementation, which should call persister.SaveStateAndSnapshot() to
-// atomically save the Raft state along with the snapshot.
+// atomically save the Raft State along with the snapshot.
 //
-// the k/v server should snapshot when Raft's saved state exceeds
+// the k/v server should snapshot when Raft's saved State exceeds
 // maxraftstate bytes, in order to allow Raft to garbage-collect its
 // log. if maxraftstate is -1, you don't need to snapshot.
 //
@@ -82,6 +97,7 @@ func StartServer(servers []*labrpc.ClientEnd, me int, persister *raft.Persister,
 	labgob.Register(Op{})
 	labgob.Register(ClientOp{})
 	labgob.Register(ConfigOp{})
+	labgob.Register(PushShardOp{})
 
 	kv := new(ShardKV)
 	kv.me = me
@@ -100,7 +116,7 @@ func StartServer(servers []*labrpc.ClientEnd, me int, persister *raft.Persister,
 
 	// Your initialization code here.
 	kv.Shards = make(map[int]Shard)
-	kv.maxSeq = make(map[int64]int64)
+	//kv.MaxSeq = make(map[int64]int64)
 	kv.sc = shardctrler.MakeClerk(kv.ctrlers)
 	kv.lastConfig = shardctrler.Config{
 		Num:    0,
@@ -114,12 +130,13 @@ func StartServer(servers []*labrpc.ClientEnd, me int, persister *raft.Persister,
 	// apply cmd to kvserver
 	//for i := 0; i < shardctrler.NShards; i++ {
 	//	kv.Shards[i] = Shard{
-	//		kvmap: make(map[string]string),
-	//		state: Serving,
+	//		Kvmap: make(map[string]string),
+	//		State: Serving,
 	//	}
 	//}
 	go kv.acquireConfig()
 	go kv.apply()
+	go kv.pushTicker()
 
 	return kv
 }

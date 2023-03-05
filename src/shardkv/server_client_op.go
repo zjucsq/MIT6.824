@@ -2,6 +2,33 @@ package shardkv
 
 import "time"
 
+// Put or Append
+type PutAppendArgs struct {
+	// You'll have to add definitions here.
+	Key   string
+	Value string
+	Op    string // "Put" or "Append"
+	// You'll have to add definitions here.
+	// Field names must start with capital letters,
+	// otherwise RPC will break.
+	RequestId int64
+	ClientId  int64
+}
+
+type PutAppendReply struct {
+	Err Err
+}
+
+type GetArgs struct {
+	Key string
+	// You'll have to add definitions here.
+}
+
+type GetReply struct {
+	Err   Err
+	Value string
+}
+
 type ClientOp struct {
 	// Your definitions here.
 	// Field names must start with capital letters,
@@ -24,7 +51,7 @@ func (kv *ShardKV) checkShard(key string) bool {
 	if _, ok := kv.Shards[shardId]; !ok {
 		return false
 	}
-	if kv.Shards[shardId].state != Serving {
+	if kv.Shards[shardId].State != Serving {
 		return false
 	}
 	return true

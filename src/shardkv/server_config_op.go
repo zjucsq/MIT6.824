@@ -21,7 +21,7 @@ func (kv *ShardKV) acquireConfig() {
 		if _, isLeader := kv.rf.GetState(); !isLeader {
 			continue
 		}
-		Debug(dKVConfig, "S%d KVServer try acquire new config!", kv.me)
+		// Debug(dKVConfig, "S%d KVServer try acquire new config!", kv.me)
 		newConfig := kv.sc.Query(-1)
 		if !kv.checkNewConfig(newConfig.Num) {
 			continue

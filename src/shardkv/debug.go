@@ -34,6 +34,7 @@ const (
 	dKVAppend    logTopic = "SKVKVAPP"
 	dKVPutAppend logTopic = "SKVKVPPP"
 	dKVConfig    logTopic = "SKVKVCOF"
+	dKVPushShard logTopic = "SKVPUSHS"
 	dCLGet       logTopic = "SKVCLGET"
 	dCLPut       logTopic = "SKVCLPUT"
 	dCLAppend    logTopic = "SKVCLAPP"

@@ -15,26 +15,26 @@ func (kv *ShardKV) applyClient(op ClientOp) OpResult {
 		Error: OK,
 		Value: "",
 	}
+	shardId := key2shard(op.Key)
 	// First check the command is executed or not
 	if op.Type != GET {
-		if maxReq, ok := kv.maxSeq[op.ClientId]; ok {
+		if maxReq, ok := kv.Shards[shardId].MaxSeq[op.ClientId]; ok {
 			if maxReq >= op.ClientSeq {
 				return res
 			}
 		}
-		kv.maxSeq[op.ClientId] = op.ClientSeq
+		kv.Shards[shardId].MaxSeq[op.ClientId] = op.ClientSeq
 	}
 	// Then do the command
-	shardId := key2shard(op.Key)
 	switch op.Type {
 	case PUT:
-		kv.Shards[shardId].kvmap[op.Key] = op.Value
+		kv.Shards[shardId].Kvmap[op.Key] = op.Value
 		Debug(dKVPut, "KV%d Put in map. key=%s, value=%s", kv.me, op.Key, op.Value)
 	case APPEND:
-		kv.Shards[shardId].kvmap[op.Key] += op.Value
+		kv.Shards[shardId].Kvmap[op.Key] += op.Value
 		Debug(dKVAppend, "KV%d Append in map. key=%s, value=%s", kv.me, op.Key, op.Value)
 	case GET:
-		if value, ok := kv.Shards[shardId].kvmap[op.Key]; !ok {
+		if value, ok := kv.Shards[shardId].Kvmap[op.Key]; !ok {
 			res.Error = ErrNoKey
 			// Debug(dKVGet, "KV%d Get in map failed, no key=%s", kv.me, op.Key)
 		} else {
@@ -53,8 +53,9 @@ func (kv *ShardKV) updateShardStatus() {
 			// Debug(dKVConfig, "gid=%d kv.gid=%d", gid, kv.gid)
 			if gid == kv.gid {
 				kv.Shards[shardId] = Shard{
-					kvmap: make(map[string]string),
-					state: Serving,
+					Kvmap:  make(map[string]string),
+					MaxSeq: make(map[int64]int64),
+					State:  Serving,
 				}
 				Debug(dKVConfig, "S%d KVServer get new Shard! shardid=%d", kv.me, shardId)
 			}
@@ -66,13 +67,21 @@ func (kv *ShardKV) updateShardStatus() {
 				if _, ok := kv.Shards[shardId]; !ok {
 					// If Shard shardId is not in this ShardKV now, we set its state to pulling
 					kv.Shards[shardId] = Shard{
-						kvmap: make(map[string]string),
-						state: Pulling,
+						Kvmap:  make(map[string]string),
+						MaxSeq: make(map[int64]int64),
+						State:  Pulling,
+					}
+				}
+			} else {
+				if _, ok := kv.Shards[shardId]; ok {
+					kv.Shards[shardId] = Shard{
+						Kvmap:  kv.Shards[shardId].Kvmap,
+						MaxSeq: kv.Shards[shardId].MaxSeq,
+						State:  BePulling,
 					}
 				}
 			}
 		}
-		// Not set BePulling state now, maybe it will be needed later
 	}
 }
 
@@ -93,6 +102,24 @@ func (kv *ShardKV) applyConfig(op ConfigOp) OpResult {
 	return res
 }
 
+func (kv *ShardKV) applyPushShard(op PushShardOp) OpResult {
+	// Debug(dKVConfig, "S%d KVServer start apply configOp=%v, op.NewConfig.Num=%d, kv.currentConfig.Num=%d", kv.me, op, op.NewConfig.Num, kv.currentConfig.Num)
+	res := OpResult{
+		Error: ErrOutOfDate,
+		Value: "",
+	}
+	kv.mu.Lock()
+	defer kv.mu.Unlock()
+	if _, ok := kv.Shards[op.ShardId]; !ok {
+		return res
+	}
+	if kv.Shards[op.ShardId].State != Pulling {
+		return res
+	}
+	kv.Shards[op.ShardId] = op.PushShard.DeepcopyShardWithState(Serving)
+	return res
+}
+
 func (kv *ShardKV) apply() {
 	for cmd := range kv.applyCh {
 		if cmd.CommandValid {
@@ -109,6 +136,10 @@ func (kv *ShardKV) apply() {
 				configOp := op.Data.(ConfigOp)
 				Debug(dSnap, "S%d KVServer receive configOp! IDX:%d, config=%v", kv.me, cmd.CommandIndex, configOp.NewConfig)
 				kv.applyConfig(configOp)
+			case PushChardOpType:
+				pushShardOp := op.Data.(PushShardOp)
+				Debug(dSnap, "S%d KVServer receive pushShardOp! IDX:%d, shard=%v", kv.me, cmd.CommandIndex, pushShardOp.PushShard)
+				kv.applyPushShard(pushShardOp)
 			}
 		} else if cmd.SnapshotValid {
 			Debug(dWarn, "Not support snapshot now")
