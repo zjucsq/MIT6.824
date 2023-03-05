@@ -9,3 +9,4 @@ src/raft/2*/
 src/debug/output.log
 src/kvraft/*/
 src/shardctrler/*/
+src/shardkv/*/
