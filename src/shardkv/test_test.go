@@ -1,17 +1,19 @@
 package shardkv
 
 import (
+	"fmt"
+	"io/ioutil"
+	"log"
+	"math/rand"
+	"strconv"
+	"sync"
+	"sync/atomic"
+	"testing"
+	"time"
+
+	"6.824/models"
 	"6.824/porcupine"
 )
-import "6.824/models"
-import "testing"
-import "strconv"
-import "time"
-import "fmt"
-import "sync/atomic"
-import "sync"
-import "math/rand"
-import "io/ioutil"
 
 const linearizabilityCheckTimeout = 1 * time.Second
 
@@ -167,6 +169,7 @@ func TestSnapshot(t *testing.T) {
 		va[i] = randstring(20)
 		ck.Put(ka[i], va[i])
 	}
+
 	for i := 0; i < n; i++ {
 		check(t, ck, ka[i], va[i])
 	}
@@ -361,9 +364,12 @@ func TestConcurrent1(t *testing.T) {
 	cfg.StartGroup(2)
 
 	time.Sleep(100 * time.Millisecond)
+	log.Println("join0")
 	cfg.join(0)
+	log.Println("leave1")
 	cfg.leave(1)
 	time.Sleep(500 * time.Millisecond)
+	log.Println("join1")
 	cfg.join(1)
 
 	time.Sleep(1 * time.Second)

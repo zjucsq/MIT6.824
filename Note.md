@@ -78,3 +78,11 @@ some problem about apply, apply snapshot and logs may conflict.
 ### trick about lock
 
 Sometimes we cannot use defer lock, such as in a for loop. In this situation, we can use a function, and use defer in the function.
+
+### config change should step by step
+
+1. config=[102 101 101 101 101 102 102 100 100 100], now 100 leave, in 100, shard 8,9,10 state=BePulling
+2. config=[102 101 101 101 101 102 102 102 101 102], but before 100 push 8,9,10 success, 101,102 leave, 100 join again. 
+3. config=[100 100 100 100 100 100 100 100 100 100], so in 100, shard 8,9,10 state=BePulling with empty map
+4. config=[100 101 101 101 101 100 100 100 101 100]
+

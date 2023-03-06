@@ -1,11 +1,12 @@
 package shardkv
 
 import (
+	"sync"
+
 	"6.824/labgob"
 	"6.824/labrpc"
 	"6.824/raft"
 	"6.824/shardctrler"
-	"sync"
 )
 
 const (
@@ -49,6 +50,7 @@ type ShardKV struct {
 	maxraftstate int // snapshot if log grows this big
 
 	// Your definitions here.
+	persister     *raft.Persister
 	Shards        map[int]Shard
 	resChs        sync.Map
 	sc            *shardctrler.Clerk
@@ -98,6 +100,7 @@ func StartServer(servers []*labrpc.ClientEnd, me int, persister *raft.Persister,
 	labgob.Register(ClientOp{})
 	labgob.Register(ConfigOp{})
 	labgob.Register(PushShardOp{})
+	labgob.Register(GCOp{})
 
 	kv := new(ShardKV)
 	kv.me = me
@@ -126,6 +129,9 @@ func StartServer(servers []*labrpc.ClientEnd, me int, persister *raft.Persister,
 		Num:    0,
 		Groups: make(map[int][]string),
 	}
+	snapshot := persister.ReadSnapshot()
+	kv.applySnapshot(snapshot)
+	kv.persister = persister
 
 	// apply cmd to kvserver
 	//for i := 0; i < shardctrler.NShards; i++ {

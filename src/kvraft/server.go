@@ -68,9 +68,9 @@ func (kv *KVServer) applyOne(op Op) OpResult {
 			if maxReq < op.ClientSeq {
 				kv.maxSeq[op.ClientId] = op.ClientSeq
 				kv.kvmap[op.Key] = op.Value
-				// Debug(dKVPut, "KV%d Put in map. key=%s, value=%s", kv.me, op.Key, kv.kvmap[op.Key])
+				// Debug(dKVPut, "G%d KV%d Put in map. key=%s, value=%s", kv.me, op.Key, kv.kvmap[op.Key])
 			} else {
-				// Debug(dKVPut, "KV%d duplicate Put in map key=%s, value=%s maxReq=%d op.ClientSeq=%d", kv.me, op.Key, kv.kvmap[op.Key], maxReq, op.ClientSeq)
+				// Debug(dKVPut, "G%d KV%d duplicate Put in map key=%s, value=%s maxReq=%d op.ClientSeq=%d", kv.me, op.Key, kv.kvmap[op.Key], maxReq, op.ClientSeq)
 			}
 		}
 		//if maxReq, ok := kv.maxSeq.Load(op.ClientId); !ok {
@@ -80,13 +80,13 @@ func (kv *KVServer) applyOne(op Op) OpResult {
 		//	if maxReq.(int64) < op.ClientSeq {
 		//		kv.maxSeq.Store(op.ClientId, op.ClientSeq)
 		//		kv.kvmap[op.Key] = op.Value
-		//		//Debug(dKVPut, "KV%d update maxseq from %d to %d", kv.me, maxReq.(int64), op.ClientSeq)
-		//		//Debug(dKVPut, "KV%d Put in map. key=%s, value=%s", kv.me, op.Key, kv.kvmap[op.Key])
+		//		//Debug(dKVPut, "G%d KV%d update maxseq from %d to %d", kv.me, maxReq.(int64), op.ClientSeq)
+		//		//Debug(dKVPut, "G%d KV%d Put in map. key=%s, value=%s", kv.me, op.Key, kv.kvmap[op.Key])
 		//	} else {
-		//		Debug(dKVPut, "KV%d Append duplicate because key=%s, value=%s", kv.me, op.Key, kv.kvmap[op.Key])
+		//		Debug(dKVPut, "G%d KV%d Append duplicate because key=%s, value=%s", kv.me, op.Key, kv.kvmap[op.Key])
 		//	}
 		//}
-		// Debug(dKVPut, "KV%d Put in map. key=%s, value=%s", kv.me, op.Key, op.Value)
+		// Debug(dKVPut, "G%d KV%d Put in map. key=%s, value=%s", kv.me, op.Key, op.Value)
 	case APPEND:
 		if maxReq, ok := kv.maxSeq[op.ClientId]; !ok {
 			kv.maxSeq[op.ClientId] = op.ClientSeq
@@ -95,9 +95,9 @@ func (kv *KVServer) applyOne(op Op) OpResult {
 			if maxReq < op.ClientSeq {
 				kv.maxSeq[op.ClientId] = op.ClientSeq
 				kv.kvmap[op.Key] += op.Value
-				// Debug(dKVAppend, "KV%d Append in map. key=%s, value=%s", kv.me, op.Key, kv.kvmap[op.Key])
+				// Debug(dKVAppend, "G%d KV%d Append in map. key=%s, value=%s", kv.me, op.Key, kv.kvmap[op.Key])
 			} else {
-				// Debug(dKVPut, "KV%d duplicate Append in map key=%s, value=%s maxReq=%d op.ClientSeq=%d", kv.me, op.Key, kv.kvmap[op.Key], maxReq, op.ClientSeq)
+				// Debug(dKVPut, "G%d KV%d duplicate Append in map key=%s, value=%s maxReq=%d op.ClientSeq=%d", kv.me, op.Key, kv.kvmap[op.Key], maxReq, op.ClientSeq)
 			}
 		}
 		//if maxReq, ok := kv.maxSeq.Load(op.ClientId); !ok {
@@ -107,17 +107,17 @@ func (kv *KVServer) applyOne(op Op) OpResult {
 		//	if maxReq.(int64) < op.ClientSeq {
 		//		kv.maxSeq.Store(op.ClientId, op.ClientSeq)
 		//		kv.kvmap[op.Key] += op.Value
-		//		//Debug(dKVAppend, "KV%d update maxseq from %d to %d", kv.me, maxReq.(int64), op.ClientSeq)
-		//		//Debug(dKVAppend, "KV%d Append in map. key=%s, value=%s", kv.me, op.Key, kv.kvmap[op.Key])
+		//		//Debug(dKVAppend, "G%d KV%d update maxseq from %d to %d", kv.me, maxReq.(int64), op.ClientSeq)
+		//		//Debug(dKVAppend, "G%d KV%d Append in map. key=%s, value=%s", kv.me, op.Key, kv.kvmap[op.Key])
 		//	}
 		//}
 	case GET:
 		if value, ok := kv.kvmap[op.Key]; !ok {
 			res.Error = ErrNoKey
-			//Debug(dKVGet, "KV%d Get in map failed, no key=%s", kv.me, op.Key)
+			//Debug(dKVGet, "G%d KV%d Get in map failed, no key=%s", kv.me, op.Key)
 		} else {
 			res.Value = value
-			// Debug(dKVGet, "KV%d Get in map in applyone. key=%s, value=%s", kv.me, op.Key, res.Value)
+			// Debug(dKVGet, "G%d KV%d Get in map in applyone. key=%s, value=%s", kv.me, op.Key, res.Value)
 		}
 	}
 	return res
@@ -194,7 +194,7 @@ func (kv *KVServer) Get(args *GetArgs, reply *GetReply) {
 		Key:   args.Key,
 		Value: "",
 	}
-	// Debug(dKVAppend, "KV%d Start Get. key=%s, value=%s", kv.me, op.Key, op.Value)
+	// Debug(dKVAppend, "G%d KV%d Start Get. key=%s, value=%s", kv.me, op.Key, op.Value)
 	index, _, isLeader := kv.rf.Start(op)
 	if !isLeader {
 		reply.Err = ErrWrongLeader
@@ -215,9 +215,9 @@ func (kv *KVServer) Get(args *GetArgs, reply *GetReply) {
 		reply.Err = res.Error
 	}
 	// if reply.Err == OK {
-	// 	Debug(dCLGet, "KV%d Get in map sucess. key=%s, value=%s", kv.me, op.Key, reply.Value)
+	// 	Debug(dCLGet, "G%d KV%d Get in map sucess. key=%s, value=%s", kv.me, op.Key, reply.Value)
 	// } else if reply.Err == ErrTimeout {
-	// 	Debug(dCLGet, "KV%d Get in map timeout. key=%s, value=%s", kv.me, op.Key, reply.Value)
+	// 	Debug(dCLGet, "G%d KV%d Get in map timeout. key=%s, value=%s", kv.me, op.Key, reply.Value)
 	// }
 	// kv.mu.Lock()
 	// delete(kv.resChs, index)
@@ -238,7 +238,7 @@ func (kv *KVServer) Get(args *GetArgs, reply *GetReply) {
 func (kv *KVServer) PutAppend(args *PutAppendArgs, reply *PutAppendReply) {
 	// Your code here.
 	//if value, ok := kv.maxSeq.Load(args.ClientId); ok {
-	//	Debug(dKVAppend, "KV%d PutAppend check multiple rpc. key=%s, value=%s, value.(int64)=%d, args.RequestId=%d", kv.me, args.Key, args.Value, value.(int64), args.RequestId)
+	//	Debug(dKVAppend, "G%d KV%d PutAppend check multiple rpc. key=%s, value=%s, value.(int64)=%d, args.RequestId=%d", kv.me, args.Key, args.Value, value.(int64), args.RequestId)
 	//	if value.(int64) >= args.RequestId {
 	//		reply.Err = OK
 	//		return
@@ -258,7 +258,7 @@ func (kv *KVServer) PutAppend(args *PutAppendArgs, reply *PutAppendReply) {
 		ClientSeq: args.RequestId,
 	}
 
-	// Debug(dKVAppend, "KV%d Start PutAppend. key=%s, value=%s", kv.me, op.Key, op.Value)
+	// Debug(dKVAppend, "G%d KV%d Start PutAppend. key=%s, value=%s", kv.me, op.Key, op.Value)
 	index, _, isLeader := kv.rf.Start(op)
 	if !isLeader {
 		reply.Err = ErrWrongLeader
@@ -278,11 +278,11 @@ func (kv *KVServer) PutAppend(args *PutAppendArgs, reply *PutAppendReply) {
 		reply.Err = res.Error
 	}
 	// if reply.Err == OK {
-	// 	Debug(dKVAppend, "KV%d PutAppend in map success. key=%s, value=%s", kv.me, op.Key, op.Value)
+	// 	Debug(dKVAppend, "G%d KV%d PutAppend in map success. key=%s, value=%s", kv.me, op.Key, op.Value)
 	// } else if reply.Err == ErrTimeout {
-	// 	Debug(dKVAppend, "KV%d PutAppend in map timeout. key=%s, value=%s", kv.me, op.Key, op.Value)
+	// 	Debug(dKVAppend, "G%d KV%d PutAppend in map timeout. key=%s, value=%s", kv.me, op.Key, op.Value)
 	// } else {
-	// 	Debug(dKVAppend, "KV%d PutAppend in map other situations. error=%s", kv.me, reply.Err)
+	// 	Debug(dKVAppend, "G%d KV%d PutAppend in map other situations. error=%s", kv.me, reply.Err)
 	// }
 	// kv.mu.Lock()
 	// delete(kv.resChs, index)

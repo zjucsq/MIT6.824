@@ -13,6 +13,7 @@ const (
 	ClientOpType    = "ClientOpType"
 	ConfigOpType    = "ConfigOpType"
 	PushChardOpType = "PushChardOpType"
+	GCOpType        = "GCOpType"
 )
 
 type OpType string

@@ -41,7 +41,7 @@ type ClientOp struct {
 }
 
 func (kv *ShardKV) PrintRetState(lt logTopic, err *Err) {
-	Debug(lt, "Return %s", *err)
+	Debug(lt, "G%d KV%d Return %s", kv.gid, kv.me, *err)
 }
 
 func (kv *ShardKV) checkShard(key string) bool {
@@ -54,6 +54,7 @@ func (kv *ShardKV) checkShard(key string) bool {
 	if kv.Shards[shardId].State != Serving {
 		return false
 	}
+	// Debug(dLog, "G%d KV%d's ShardDict=%d", kv.gid, kv.me, kv.Shards)
 	return true
 }
 
@@ -77,7 +78,7 @@ func (kv *ShardKV) Get(args *GetArgs, reply *GetReply) {
 		Data:   data,
 	}
 
-	Debug(dKVGet, "KV%d Start Get in shardId=%d. key=%s, value=%s", kv.me, shardId, data.Key, data.Value)
+	Debug(dKVGet, "G%d KV%d Start Get in shardId=%d. key=%s, value=%s", kv.gid, kv.me, shardId, data.Key, data.Value)
 	index, _, isLeader := kv.rf.Start(op)
 	if !isLeader {
 		reply.Err = ErrWrongLeader
@@ -95,7 +96,7 @@ func (kv *ShardKV) Get(args *GetArgs, reply *GetReply) {
 		reply.Err = res.Error
 	}
 	kv.resChs.Delete(index)
-	//Debug(dKVGet, "KV%d ret Get. key=%s, value=%s", kv.me, data.Key, data.Value)
+	//Debug(dKVGet, "G%d KV%d ret Get. key=%s, value=%s", kv.gid, kv.me, data.Key, data.Value)
 	if _, isLeader := kv.rf.GetState(); !isLeader {
 		reply.Err = ErrWrongLeader
 		return
@@ -124,7 +125,7 @@ func (kv *ShardKV) PutAppend(args *PutAppendArgs, reply *PutAppendReply) {
 		Data:   data,
 	}
 
-	Debug(dKVAppend, "KV%d Start PutAppend in shardId=%d. key=%s, value=%s.", kv.me, shardId, data.Key, data.Value)
+	Debug(dKVAppend, "G%d KV%d Start PutAppend in shardId=%d. key=%s, value=%s.", kv.gid, kv.me, shardId, data.Key, data.Value)
 	index, _, isLeader := kv.rf.Start(op)
 	if !isLeader {
 		reply.Err = ErrWrongLeader
@@ -140,7 +141,7 @@ func (kv *ShardKV) PutAppend(args *PutAppendArgs, reply *PutAppendReply) {
 	case res := <-tmpCh:
 		reply.Err = res.Error
 	}
-	//Debug(dKVAppend, "KV%d ret PutAppend. key=%s, value=%s", kv.me, data.Key, data.Value)
+	//Debug(dKVAppend, "G%d KV%d ret PutAppend. key=%s, value=%s", kv.gid, kv.me, data.Key, data.Value)
 	kv.resChs.Delete(index)
 	if _, isLeader := kv.rf.GetState(); !isLeader {
 		reply.Err = ErrWrongLeader
